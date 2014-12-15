@@ -24,8 +24,5 @@ please let us know as well because we will look into it.
 Pull requests are welcome too. :-)
 
 
-.. _django-hvad: https://github.com/kristianoellegaard/django-hvad
-.. _django-mptt: https://github.com/django-mptt/django-mptt
-.. _django-fluent-pages: https://github.com/edoburu/django-fluent-pages
-.. _django-polymorphic: https://github.com/chrisglass/django_polymorphic
-.. _documentation: http://django-parler.readthedocs.org/
+.. _django-parler: https://github.com/edoburu/django-parler
+.. _django-rest-framework: http://www.django-rest-framework.org/
