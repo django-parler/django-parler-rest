@@ -13,6 +13,45 @@ A brief overview
 * TODO
 
 
+Usage
+=====
+
+The translations can be exposed as a seperate serializer::
+
+    from rest_framework import serializers
+    from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
+    from .models import Country   # Example model
+
+
+    class CountrySerializer(TranslatableModelSerializer):
+        translations = TranslatedFieldsField(shared_model=Country)
+
+        class Meta:
+            model = Country
+            fields = ('id', 'country_code', 'translations')
+
+This will expose the fields as a separate dictionary in the JSON output::
+
+    {
+        "id": 528,
+        "country_code": "NL",
+        "translations": {
+            "nl": {
+                "name": "Nederland",
+                "url": "http://nl.wikipedia.org/wiki/Nederland"
+            },
+            "en": {
+                "name": "Netherlands",
+                "url": "http://en.wikipedia.org/wiki/Netherlands"
+            },
+            "de" {
+                "name": "Niederlande",
+                "url": "http://de.wikipedia.org/wiki/Niederlande"
+            }
+        }
+    }
+
+
 Contributing
 ============
 
