@@ -6,17 +6,46 @@ Adding translation support to django-rest-framework_.
 This package adds support for TranslatableModels from django-parler_ to django-rest-framework_.
 
 
-A brief overview
-================
+Installation
+============
 
-* First make sure you have django-parler_ installed and configured.
-* TODO
+::
 
+    pip install django-parler-rest
 
 Usage
 =====
 
-The translations can be exposed as a seperate serializer::
+* First make sure you have django-parler_ installed and configured.
+* Use the serializers as demonstrated below to expose the translations.
+
+First configure a model, following the `django-parler documentation <http://django-parler.readthedocs.org/en/latest/>`_::
+
+    from django.db import models
+    from parler.models import TranslatableModel, TranslatedFields
+
+
+    class Country(TranslatableModel):
+        """
+        Country database model.
+        """
+
+        country_code = models.CharField(_("Country code"), unique=True, db_index=True)
+
+        translations = TranslatedFields(
+            name = models.CharField(_("Name"), max_length=200)
+            url = models.URLField(_("Webpage"), max_length=200, blank=True)
+        )
+
+        class Meta:
+            verbose_name = _("Country")
+            verbose_name_plural = _("Countries")
+
+        def __unicode__(self):
+            return self.name
+
+
+The model translations can be exposed as a seperate serializer::
 
     from rest_framework import serializers
     from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
@@ -29,6 +58,7 @@ The translations can be exposed as a seperate serializer::
         class Meta:
             model = Country
             fields = ('id', 'country_code', 'translations')
+
 
 This will expose the fields as a separate dictionary in the JSON output::
 
