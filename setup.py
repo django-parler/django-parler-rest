@@ -26,7 +26,7 @@ setup(
 
     install_requires=[
         'django-parler>=1.2',
-        'djangorestframework>=2.0<3.0',   # unknown which 2.x version is minimum
+        'djangorestframework>=2.0,<3.0',   # unknown which 2.x version is minimum
     ],
     requires=[
         'Django (>=1.4.2)',
