@@ -1,13 +1,15 @@
 from __future__ import absolute_import
+
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers
+
 from parler_rest.utils import create_translated_fields_serializer
+from rest_framework import serializers
 
 
 class TranslatedFieldsField(serializers.WritableField):
-    """
-    Exposing translated fields for a TranslatableModel in REST style.
-    """
+
+    """Exposing translated fields for a TranslatableModel in REST style."""
+
     def __init__(self, *args, **kwargs):
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
@@ -33,9 +35,10 @@ class TranslatedFieldsField(serializers.WritableField):
 
             # Create serializer based on shared model.
             translated_model = self.shared_model._parler_meta[related_name]
-            self.serializer_class = create_translated_fields_serializer(self.shared_model, related_name=related_name, meta=dict(
-                fields = translated_model.get_translated_fields()
-            ))
+            self.serializer_class = create_translated_fields_serializer(
+                self.shared_model, related_name=related_name,
+                meta={'fields': translated_model.get_translated_fields()}
+            )
         else:
             self.shared_model = self.serializer_class.Meta.model
 
@@ -45,9 +48,7 @@ class TranslatedFieldsField(serializers.WritableField):
                 raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
     def to_native(self, value):
-        """
-        Serialize to REST format.
-        """
+        """Serialize to REST format."""
         if value is None:
             return None
 
@@ -62,9 +63,7 @@ class TranslatedFieldsField(serializers.WritableField):
         return ret
 
     def from_native(self, data, files=None):
-        """
-        Deserialize primitives -> objects.
-        """
+        """Deserialize primitives -> objects."""
         self._errors = {}
         self._serializers = {}
 
@@ -81,7 +80,7 @@ class TranslatedFieldsField(serializers.WritableField):
         if not self._errors:
             return translations
             # No 'master' object known yet, can't store fields.
-            #return self.restore_object(translations)
+            # return self.restore_object(translations)
 
     def restore_fields(self, data, files):
         translations = {}
@@ -98,11 +97,11 @@ class TranslatedFieldsField(serializers.WritableField):
             self._serializers[lang_code].perform_validation(model_fields)
         return data
 
-#    def restore_object(self, data):
-#        master = self.parent.object
-#        for lang_code, model_fields in data.iteritems():
-#            translation = master._get_translated_model(lang_code, auto_create=True)
-#            self._serializers[lang_code].restore_object(model_fields, instance=translation)
+    # def restore_object(self, data):
+    #    master = self.parent.object
+    #    for lang_code, model_fields in data.iteritems():
+    #        translation = master._get_translated_model(lang_code, auto_create=True)
+    #        self._serializers[lang_code].restore_object(model_fields, instance=translation)
 
     def validate(self, data):
         super(TranslatedFieldsField, self).validate(data)  # checks 'required' state.

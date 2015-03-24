@@ -1,19 +1,17 @@
 from __future__ import absolute_import
+
 from rest_framework import serializers
-from parler_rest.fields import TranslatedFieldsField
 
 
 class TranslatableModelSerializer(serializers.ModelSerializer):
-    """
-    Serializer that makes sure that translations
-    from the :class:`TranslatedFieldsField` are properly saved.
+
+    """Serializer that saves the :class:`TranslatedFieldsField` properly.
 
     It should be used instead of the regular ``ModelSerializer``.
     """
+
     def save_object(self, obj, **kwargs):
-        """
-        Extract the translations, store these into the django-parler model data.
-        """
+        """Extract the translations, store these into the django-parler model data."""
         for meta in obj._parler_meta:
             translations = obj._related_data.pop(meta.rel_name, {})
             if translations:
