@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 
+import six
+
 from .models import Country
 from .serializers import CountryTranslatedSerializer
 
@@ -35,7 +37,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
             }
         }
         serializer = CountryTranslatedSerializer(self.instance)
-        self.assertItemsEqual(serializer.data, expected)
+        six.assertCountEqual(self, serializer.data, expected)
 
     def test_translations_validation(self):
         data = {
@@ -53,7 +55,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         }
         serializer = CountryTranslatedSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
-        self.assertItemsEqual(serializer.validated_data['translations'], data['translations'])
+        six.assertCountEqual(self, serializer.validated_data['translations'], data['translations'])
 
     def test_translated_fields_validation(self):
         data = {
@@ -71,7 +73,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         serializer = CountryTranslatedSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn('translations', serializer.errors)
-        self.assertItemsEqual(serializer.errors['translations'], ('en', 'es'))
+        six.assertCountEqual(self, serializer.errors['translations'], ('en', 'es'))
         self.assertIn('name', serializer.errors['translations']['en'])
         self.assertIn('url', serializer.errors['translations']['es'])
 
