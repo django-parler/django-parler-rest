@@ -11,6 +11,11 @@ class TranslatedFieldsField(serializers.Field):
 
     """Exposing translated fields for a TranslatableModel in REST style."""
 
+    default_error_messages = dict(serializers.Field.default_error_messages, **{
+        'invalid': "Input is not a valid dict",
+        'invalid_translations': "Translated values are not valid, errors: {errors}"
+    })
+
     def __init__(self, *args, **kwargs):
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
@@ -63,48 +68,29 @@ class TranslatedFieldsField(serializers.Field):
 
         return ret
 
-    def from_native(self, data, files=None):
+    def to_internal_value(self, data):
         """Deserialize primitives -> objects."""
-        self._errors = {}
-        self._serializers = {}
-
         if data is None:
             return
-        elif isinstance(data, dict):
-            # Very similar code to ModelSerializer.from_native():
-            translations = self.restore_fields(data, files)
-            if translations is not None:
-                translations = self.perform_validation(translations)
-        else:
-            raise serializers.ValidationError(self.error_messages['invalid'])
 
-        if not self._errors:
-            return translations
-            # No 'master' object known yet, can't store fields.
-            # return self.restore_object(translations)
+        if not isinstance(data, dict):
+            self.fail('invalid')
 
-    def restore_fields(self, data, files):
-        translations = {}
-        for lang_code, model_fields in data.iteritems():
-            # Create a serializer per language, so errors can be stored per serializer instance.
-            self._serializers[lang_code] = serializer = self.serializer_class()
-            serializer._errors = {}  # because it's .from_native() is skipped.
-            translations[lang_code] = serializer.restore_fields(model_fields, files)
-        return translations
+        result = {}
+        errors = {}
+        for lang_code, model_fields in data.items():
+            serializer = self.serializer_class(data=model_fields)
+            if serializer.is_valid():
+                result[lang_code] = serializer.data
+            else:
+                errors[lang_code] = serializer.errors
 
-    def perform_validation(self, data):
-        # Runs `validate_<fieldname>()` and `validate()` methods on the serializer
-        for lang_code, model_fields in data.iteritems():
-            self._serializers[lang_code].perform_validation(model_fields)
-        return data
+        if errors:
+            raise serializers.ValidationError(errors)
+        return result
 
     # def restore_object(self, data):
     #    master = self.parent.object
     #    for lang_code, model_fields in data.iteritems():
     #        translation = master._get_translated_model(lang_code, auto_create=True)
     #        self._serializers[lang_code].restore_object(model_fields, instance=translation)
-
-    def validate(self, data):
-        super(TranslatedFieldsField, self).validate(data)  # checks 'required' state.
-        for lang_code, model_fields in data.iteritems():
-            self._serializers[lang_code].validate(model_fields)

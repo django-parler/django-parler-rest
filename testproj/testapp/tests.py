@@ -19,7 +19,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.country.url = "http://es.wikipedia.org/wiki/Spain"
         self.country.save()
 
-    def test_language_serialization(self):
+    def test_translations_serialization(self):
         expected = {
             'pk': self.country.pk,
             'country_code': 'ES',
@@ -36,3 +36,40 @@ class CountryTranslatedSerializerTestCase(TestCase):
         }
         serializer = CountryTranslatedSerializer(self.country)
         self.assertItemsEqual(serializer.data, expected)
+
+    def test_translations_validation(self):
+        data = {
+            'country_code': 'FR',
+            'translations': {
+                'en': {
+                    'name': "France",
+                    'url': "http://es.wikipedia.org/wiki/France"
+                },
+                'es': {
+                    'name': "Francia",
+                    'url': "http://es.wikipedia.org/wiki/Francia"
+                },
+            }
+        }
+        serializer = CountryTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        self.assertItemsEqual(serializer.validated_data['translations'], data['translations'])
+
+    def test_translated_fields_validation(self):
+        data = {
+            'country_code': 'FR',
+            'translations': {
+                'en': {
+                    'url': "http://es.wikipedia.org/wiki/France"
+                },
+                'es': {
+                    'url': "http://es.wikipedia.org/wiki/Francia"
+                },
+            }
+        }
+        serializer = CountryTranslatedSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('translations', serializer.errors)
+        self.assertItemsEqual(serializer.errors['translations'], ('en', 'es'))
+        self.assertIn('name', serializer.errors['translations']['en'])
+        self.assertIn('name', serializer.errors['translations']['es'])
