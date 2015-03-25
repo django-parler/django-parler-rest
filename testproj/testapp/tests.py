@@ -43,7 +43,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
             'translations': {
                 'en': {
                     'name': "France",
-                    'url': "http://es.wikipedia.org/wiki/France"
+                    'url': "http://en.wikipedia.org/wiki/France"
                 },
                 'es': {
                     'name': "Francia",
@@ -60,7 +60,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
             'country_code': 'FR',
             'translations': {
                 'en': {
-                    'url': "http://es.wikipedia.org/wiki/France"
+                    'url': "http://en.wikipedia.org/wiki/France"
                 },
                 'es': {
                     'url': "http://es.wikipedia.org/wiki/Francia"
@@ -73,3 +73,27 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.assertItemsEqual(serializer.errors['translations'], ('en', 'es'))
         self.assertIn('name', serializer.errors['translations']['en'])
         self.assertIn('name', serializer.errors['translations']['es'])
+
+    def test_tranlations_saving(self):
+        data = {
+            'country_code': 'FR',
+            'translations': {
+                'en': {
+                    'name': "France",
+                    'url': "http://en.wikipedia.org/wiki/France"
+                },
+                'es': {
+                    'name': "Francia",
+                    'url': "http://es.wikipedia.org/wiki/Francia"
+                },
+            }
+        }
+        serializer = CountryTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        instance = serializer.save()
+        instance.set_current_language('en')
+        self.assertEqual(instance.name, "France")
+        self.assertEqual(instance.url, "http://es.wikipedia.org/wiki/France")
+        instance.set_current_language('es')
+        self.assertEqual(instance.name, "Francia")
+        self.assertEqual(instance.url, "http://es.wikipedia.org/wiki/France")

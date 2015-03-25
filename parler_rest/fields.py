@@ -13,7 +13,6 @@ class TranslatedFieldsField(serializers.Field):
 
     default_error_messages = dict(serializers.Field.default_error_messages, **{
         'invalid': "Input is not a valid dict",
-        'invalid_translations': "Translated values are not valid, errors: {errors}"
     })
 
     def __init__(self, *args, **kwargs):
@@ -76,8 +75,7 @@ class TranslatedFieldsField(serializers.Field):
         if not isinstance(data, dict):
             self.fail('invalid')
 
-        result = {}
-        errors = {}
+        result, errors = {}, {}
         for lang_code, model_fields in data.items():
             serializer = self.serializer_class(data=model_fields)
             if serializer.is_valid():

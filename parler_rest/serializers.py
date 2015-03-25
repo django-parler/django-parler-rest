@@ -12,14 +12,25 @@ class TranslatableModelSerializer(serializers.ModelSerializer):
     It should be used instead of the regular ``ModelSerializer``.
     """
 
-    def save_object(self, obj, **kwargs):
+    def save(self, **kwargs):
         """Extract the translations, store these into the django-parler model data."""
-        for meta in obj._parler_meta:
-            translations = obj._related_data.pop(meta.rel_name, {})
-            if translations:
-                for lang_code, model_fields in translations.iteritems():
-                    translations = obj._get_translated_model(lang_code, auto_create=True, meta=meta)
-                    for field, value in model_fields.iteritems():
-                        setattr(translations, field, value)
+        self._parler_translations = self._pop_translated_data()
 
-        return super(TranslatableModelSerializer, self).save_object(obj, **kwargs)
+        instance = super(TranslatableModelSerializer, self).save(**kwargs)
+
+        # TODO: Save translations
+        # translations = obj._related_data.pop(meta.rel_name, {})
+        #     if translations:
+        #         for lang_code, model_fields in translations.iteritems():
+        #             translations = obj._get_translated_model(lang_code, auto_create=True, meta=meta)
+        #             for field, value in model_fields.iteritems():
+        #                 setattr(translations, field, value)
+        return instance
+
+    def _pop_translated_data(self, **kwargs):
+        parler_translations = {}
+        for meta in self.Meta.model._parler_meta:
+            translations = kwargs.pop(meta.rel_name, {})
+            if translations:
+                parler_translations[meta.rel_name] = translations
+        return parler_translations
