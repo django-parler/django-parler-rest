@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
@@ -5,9 +6,9 @@ from parler_rest.serializers import TranslatableModelSerializer, TranslatedField
 from .models import Country
 
 
-class CountrySerializer(TranslatableModelSerializer):
+class CountryTranslatedSerializer(TranslatableModelSerializer):
     translations = TranslatedFieldsField(shared_model=Country)
 
     class Meta:
         model = Country
-        fields = ('id', 'country_code', 'translations')
+        fields = ('pk', 'country_code', 'translations')
