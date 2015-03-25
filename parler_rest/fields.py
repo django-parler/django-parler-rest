@@ -86,9 +86,3 @@ class TranslatedFieldsField(serializers.Field):
         if errors:
             raise serializers.ValidationError(errors)
         return result
-
-    # def restore_object(self, data):
-    #    master = self.parent.object
-    #    for lang_code, model_fields in data.iteritems():
-    #        translation = master._get_translated_model(lang_code, auto_create=True)
-    #        self._serializers[lang_code].restore_object(model_fields, instance=translation)
