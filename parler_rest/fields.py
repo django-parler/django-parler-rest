@@ -2,11 +2,12 @@ from __future__ import absolute_import
 
 from django.core.exceptions import ImproperlyConfigured
 
-from parler_rest.utils import create_translated_fields_serializer
 from rest_framework import serializers
 
+from parler_rest.utils import create_translated_fields_serializer
 
-class TranslatedFieldsField(serializers.WritableField):
+
+class TranslatedFieldsField(serializers.Field):
 
     """Exposing translated fields for a TranslatableModel in REST style."""
 
@@ -15,8 +16,8 @@ class TranslatedFieldsField(serializers.WritableField):
         self.shared_model = kwargs.pop('shared_model', None)
         super(TranslatedFieldsField, self).__init__(*args, **kwargs)
 
-    def initialize(self, parent, field_name):
-        super(TranslatedFieldsField, self).initialize(parent, field_name)
+    def bind(self, field_name, parent):
+        super(TranslatedFieldsField, self).bind(field_name, parent)
         self._serializers = {}
 
         # Expect 1-on-1 for now.
@@ -47,18 +48,18 @@ class TranslatedFieldsField(serializers.WritableField):
             if 'language_code' in self.serializer_class.base_fields:
                 raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
-    def to_native(self, value):
+    def to_representation(self, value):
         """Serialize to REST format."""
         if value is None:
-            return None
+            return
 
         # Only need one serializer to create the native objects
         serializer = self.serializer_class()
 
         # Split into a dictionary per language
-        ret = serializers.SortedDictWithMetadata()
-        for translation in value.all():
-            ret[translation.language_code] = serializer.to_native(translation)
+        ret = serializers.OrderedDict()
+        for translation in value.all():  # value = translations related manager
+            ret[translation.language_code] = serializer.to_representation(translation)
 
         return ret
 
@@ -68,7 +69,7 @@ class TranslatedFieldsField(serializers.WritableField):
         self._serializers = {}
 
         if data is None:
-            return None
+            return
         elif isinstance(data, dict):
             # Very similar code to ModelSerializer.from_native():
             translations = self.restore_fields(data, files)

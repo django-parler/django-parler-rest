@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 from rest_framework import serializers
 
+from parler_rest.fields import TranslatedFieldsField  # noqa
+
 
 class TranslatableModelSerializer(serializers.ModelSerializer):
 

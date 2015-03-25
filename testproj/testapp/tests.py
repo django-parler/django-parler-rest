@@ -20,8 +20,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.country.save()
 
     def test_language_serialization(self):
-        serializer = CountryTranslatedSerializer(self.country)
-        self.assertEqual(serializer.data, {
+        expected = {
             'pk': self.country.pk,
             'country_code': 'ES',
             'translations': {
@@ -32,6 +31,8 @@ class CountryTranslatedSerializerTestCase(TestCase):
                 'es': {
                     'name': "España",
                     'url': "http://es.wikipedia.org/wiki/España"
-                }
+                },
             }
-        })
+        }
+        serializer = CountryTranslatedSerializer(self.country)
+        self.assertItemsEqual(serializer.data, expected)
