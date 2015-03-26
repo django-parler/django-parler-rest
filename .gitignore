@@ -2,6 +2,7 @@
 *.pyo
 *.mo
 *.db
+db.sqlite3
 *.egg-info/
 *.egg/
 .coverage
@@ -9,8 +10,10 @@
 .idea/
 .pydevproject
 .idea/workspace.xml
+*.sublime-*
 .DS_Store
 .tox/
+.env
 build/
 dist/
 docs/_build/

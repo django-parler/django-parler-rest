@@ -2,8 +2,7 @@ from rest_framework import serializers
 
 
 def create_translated_fields_serializer(shared_model, meta=None, related_name=None, **fields):
-    """
-    Create a REST framework serializer class for a translated fields model.
+    """Create a REST framework serializer class for a translated fields model.
 
     :param shared_model: The shared model.
     :type shared_model: :class:`parler.models.TranslatableModel`
