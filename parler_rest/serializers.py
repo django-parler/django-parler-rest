@@ -1,4 +1,8 @@
-from __future__ import absolute_import
+# -*- coding: utf-8 -*-
+
+"""Custom serializers suitable to translated models."""
+
+from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
 
@@ -7,19 +11,22 @@ from parler_rest.fields import TranslatedFieldsField  # noqa
 
 class TranslatableModelSerializer(serializers.ModelSerializer):
 
-    """Serializer that saves the :class:`TranslatedFieldsField` properly.
-
-    It should be used instead of the regular ``ModelSerializer``.
-    """
+    """Serializer that saves :class:`TranslatedFieldsField` automatically."""
 
     def save(self, **kwargs):
-        """Extract the translations, store these into the django-parler model data."""
+        """Extract the translations and save them after main object save.
+
+        By default all translations will be saved no matter if creating
+        or updating an object. Users with more complex needs might define
+        their own save and handle translation saving themselves.
+        """
         translated_data = self._pop_translated_data()
         instance = super(TranslatableModelSerializer, self).save(**kwargs)
         self.save_translations(instance, translated_data)
         return instance
 
     def _pop_translated_data(self):
+        """Separate data of translated fields from other data."""
         translated_data = {}
         for meta in self.Meta.model._parler_meta:
             translations = self.validated_data.pop(meta.rel_name, {})
@@ -28,6 +35,7 @@ class TranslatableModelSerializer(serializers.ModelSerializer):
         return translated_data
 
     def save_translations(self, instance, translated_data):
+        """Save translation data into translation objects."""
         for meta in self.Meta.model._parler_meta:
             translations = translated_data.get(meta.rel_name, {})
             for lang_code, model_fields in translations.items():
