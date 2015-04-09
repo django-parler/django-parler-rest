@@ -1,4 +1,8 @@
-from __future__ import absolute_import
+# -*- coding: utf-8 -*-
+
+"""Custom serializer fields for nested translations."""
+
+from __future__ import unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -16,14 +20,18 @@ class TranslatedFieldsField(serializers.Field):
     })
 
     def __init__(self, *args, **kwargs):
+        """Receive custom serializer class and model."""
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
         super(TranslatedFieldsField, self).__init__(*args, **kwargs)
 
     def bind(self, field_name, parent):
-        super(TranslatedFieldsField, self).bind(field_name, parent)
-        self._serializers = {}
+        """Create translation serializer dynamically.
 
+        Takes translatable model class (shared_model) from parent serializer and it
+        may create a serializer class on the fly if no custom class was specified.
+        """
+        super(TranslatedFieldsField, self).bind(field_name, parent)
         # Expect 1-on-1 for now.
         related_name = field_name
 
@@ -36,7 +44,7 @@ class TranslatedFieldsField(serializers.Field):
         if self.serializer_class is None:
             # Auto detect parent model
             if self.shared_model is None:
-                self.shared_model = self.parent.opts.model
+                self.shared_model = parent.opts.model
 
             # Create serializer based on shared model.
             translated_model = self.shared_model._parler_meta[related_name]
@@ -53,7 +61,11 @@ class TranslatedFieldsField(serializers.Field):
                 raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
     def to_representation(self, value):
-        """Serialize to REST format."""
+        """Serialize translated fields.
+
+        Simply iterate over available translations and, for each language,
+        delegate serialization logic to the translation model serializer.
+        """
         if value is None:
             return
 
@@ -61,14 +73,18 @@ class TranslatedFieldsField(serializers.Field):
         serializer = self.serializer_class()
 
         # Split into a dictionary per language
-        ret = serializers.OrderedDict()
+        result = serializers.OrderedDict()
         for translation in value.all():  # value = translations related manager
-            ret[translation.language_code] = serializer.to_representation(translation)
+            result[translation.language_code] = serializer.to_representation(translation)
 
-        return ret
+        return result
 
     def to_internal_value(self, data):
-        """Deserialize primitives -> objects."""
+        """Deserialize data from translations fields.
+
+        For each received language, delegate validation logic to
+        the translation model serializer.
+        """
         if data is None:
             return
 
