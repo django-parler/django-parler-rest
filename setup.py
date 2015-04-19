@@ -22,11 +22,11 @@ def find_version(*parts):
 setup(
     name='django-parler-rest',
     version=find_version('parler_rest', '__init__.py'),
-    license='Apache License, Version 2.0',
+    license='Apache 2.0',
 
     install_requires=[
         'django-parler>=1.2',
-        'djangorestframework>=2.0,<3.0',   # unknown which 2.x version is minimum
+        'djangorestframework>=3.0',
     ],
     requires=[
         'Django (>=1.4.2)',
