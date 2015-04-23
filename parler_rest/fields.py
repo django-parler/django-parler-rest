@@ -55,11 +55,6 @@ class TranslatedFieldsField(serializers.Field):
         else:
             self.shared_model = self.serializer_class.Meta.model
 
-            # Don't need to have a 'language_code', it will be split up already,
-            # so this should avoid redundant output.
-            if 'language_code' in self.serializer_class.base_fields:
-                raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
-
     def to_representation(self, value):
         """Serialize translated fields.
 
@@ -71,6 +66,11 @@ class TranslatedFieldsField(serializers.Field):
 
         # Only need one serializer to create the native objects
         serializer = self.serializer_class()
+
+        # Don't need to have a 'language_code', it will be split up already,
+        # so this should avoid redundant output.
+        if 'language_code' in serializer.fields:
+            raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
         # Split into a dictionary per language
         result = serializers.OrderedDict()
