@@ -49,3 +49,6 @@ class BaseTranslatableModelSerializer(object):
 
 class TranslatableModelSerializer(serializers.ModelSerializer, BaseTranslatableModelSerializer):
     pass
+
+class HyperlinkedTranslatableModelSerializer(serializers.HyperlinkedModelSerializer, BaseTranslatableModelSerializer):
+    pass
