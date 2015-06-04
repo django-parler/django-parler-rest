@@ -9,9 +9,11 @@ from rest_framework import serializers
 from parler_rest.fields import TranslatedFieldsField  # noqa
 
 
-class TranslatableModelSerializer(serializers.ModelSerializer):
-
-    """Serializer that saves :class:`TranslatedFieldsField` automatically."""
+class BaseTranslatableModelSerializer(object):
+    """
+    Base class containing methods for a serializer that saves :class:`TranslatedFieldsField` automatically.
+    Do not use this alone as it does not have any serializer logic apart from working with translations.
+    """
 
     def save(self, **kwargs):
         """Extract the translations and save them after main object save.
@@ -21,7 +23,7 @@ class TranslatableModelSerializer(serializers.ModelSerializer):
         their own save and handle translation saving themselves.
         """
         translated_data = self._pop_translated_data()
-        instance = super(TranslatableModelSerializer, self).save(**kwargs)
+        instance = super(BaseTranslatableModelSerializer, self).save(**kwargs)
         self.save_translations(instance, translated_data)
         return instance
 
@@ -43,3 +45,10 @@ class TranslatableModelSerializer(serializers.ModelSerializer):
                 for field, value in model_fields.items():
                     setattr(translation, field, value)
                 translation.save()
+
+
+class TranslatableModelSerializer(serializers.ModelSerializer, BaseTranslatableModelSerializer):
+    pass
+
+class HyperlinkedTranslatableModelSerializer(serializers.HyperlinkedModelSerializer, BaseTranslatableModelSerializer):
+    pass
