@@ -33,7 +33,7 @@ class TranslatedFieldsField(serializers.Field):
         """
         super(TranslatedFieldsField, self).bind(field_name, parent)
         # Expect 1-on-1 for now.
-        related_name = field_name
+        related_name = self.source or field_name
 
         # This could all be done in __init__(), but by moving the code here,
         # it's possible to auto-detect the parent model.
@@ -44,7 +44,7 @@ class TranslatedFieldsField(serializers.Field):
         if self.serializer_class is None:
             # Auto detect parent model
             if self.shared_model is None:
-                self.shared_model = parent.opts.model
+                self.shared_model = parent.Meta.model
 
             # Create serializer based on shared model.
             translated_model = self.shared_model._parler_meta[related_name]
@@ -57,7 +57,7 @@ class TranslatedFieldsField(serializers.Field):
 
             # Don't need to have a 'language_code', it will be split up already,
             # so this should avoid redundant output.
-            if 'language_code' in self.serializer_class.base_fields:
+            if 'language_code' in self.serializer_class().fields:
                 raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
     def to_representation(self, value):
