@@ -46,7 +46,7 @@ INSTALLED_APPS = (
     'parler',
     'rest_framework',
 
-    'testapp',
+    'testproj',
 )
 
 MIDDLEWARE_CLASSES = (
