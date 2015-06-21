@@ -44,3 +44,7 @@ class TranslatableModelSerializerMixin(object):
 
 class TranslatableModelSerializer(serializers.ModelSerializer, TranslatableModelSerializerMixin):
     pass
+
+
+class TranslatableHyperlinkedModelSerializer(serializers.HyperlinkedModelSerializer, TranslatableModelSerializerMixin):
+    pass
