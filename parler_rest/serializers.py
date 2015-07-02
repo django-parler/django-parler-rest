@@ -6,7 +6,7 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
 
-from parler_rest.fields import TranslatedFieldsField  # noqa
+from .fields import TranslatedFieldsField  # noqa
 
 
 class TranslatableModelSerializer(serializers.ModelSerializer):

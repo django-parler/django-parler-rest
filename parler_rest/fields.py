@@ -8,7 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from rest_framework import serializers
 
-from parler_rest.utils import create_translated_fields_serializer
+from .utils import create_translated_fields_serializer
 
 
 class TranslatedFieldsField(serializers.Field):
