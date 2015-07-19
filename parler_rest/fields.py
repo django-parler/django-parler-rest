@@ -5,6 +5,7 @@ Custom serializer fields for nested translations.
 from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
+from rest_framework.compat import OrderedDict
 from parler_rest.utils import create_translated_fields_serializer
 
 
@@ -104,3 +105,25 @@ class TranslatedFieldsField(serializers.Field):
         if errors:
             raise serializers.ValidationError(errors)
         return result
+
+
+class TranslatedField(serializers.ReadOnlyField):
+    """
+    Read-only field to expose a single object property in all it's languages.
+    """
+
+    def get_attribute(self, instance):
+        # Instead of fetching the attribute with getattr() (that proxies to the Parler TranslatableField),
+        # read the translation model directly to fetch all languages, and combine that into a dict.
+        model = instance._parler_meta.get_model_by_field(self.source)  # This already validates the fields existance
+        extension = instance._parler_meta[model]
+        translations = getattr(instance, extension.rel_name)
+
+        # Split into a dictionary per language
+        value = OrderedDict()
+        for translation in translations.all():  # Allow prefetch_related() to do it's work
+            value[translation.language_code] = getattr(translation, self.source)
+        return value
+
+    def to_representation(self, value):
+        return value
