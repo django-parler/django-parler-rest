@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
-
-"""Custom serializer fields for nested translations."""
-
+"""
+Custom serializer fields for nested translations.
+"""
 from __future__ import unicode_literals
-
 from django.core.exceptions import ImproperlyConfigured
-
 from rest_framework import serializers
-
 from parler_rest.utils import create_translated_fields_serializer
 
 
 class TranslatedFieldsField(serializers.Field):
-
-    """Exposing translated fields for a TranslatableModel in REST style."""
-
+    """
+    Exposing all translated fields for a TranslatableModel in REST style.
+    """
     default_error_messages = dict(serializers.Field.default_error_messages, **{
         'invalid': "Input is not a valid dict",
     })
 
     def __init__(self, *args, **kwargs):
-        """Receive custom serializer class and model."""
+        """
+        Receive custom serializer class and model.
+        """
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
         super(TranslatedFieldsField, self).__init__(*args, **kwargs)
 
     def bind(self, field_name, parent):
-        """Create translation serializer dynamically.
+        """
+        Create translation serializer dynamically.
 
         Takes translatable model class (shared_model) from parent serializer and it
         may create a serializer class on the fly if no custom class was specified.
@@ -56,7 +56,8 @@ class TranslatedFieldsField(serializers.Field):
             self.shared_model = self.serializer_class.Meta.model
 
     def to_representation(self, value):
-        """Serialize translated fields.
+        """
+        Serialize translated fields.
 
         Simply iterate over available translations and, for each language,
         delegate serialization logic to the translation model serializer.
@@ -80,7 +81,8 @@ class TranslatedFieldsField(serializers.Field):
         return result
 
     def to_internal_value(self, data):
-        """Deserialize data from translations fields.
+        """
+        Deserialize data from translations fields.
 
         For each received language, delegate validation logic to
         the translation model serializer.
