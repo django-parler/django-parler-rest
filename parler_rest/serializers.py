@@ -4,7 +4,9 @@ Custom serializers suitable to translated models.
 """
 from __future__ import absolute_import, unicode_literals
 from rest_framework import serializers
-from parler_rest.fields import TranslatedFieldsField, TranslatedField  # noqa
+
+# Similar to DRF itself, expose all fields in the same manner.
+from parler_rest.fields import TranslatedFieldsField, TranslatedField, TranslatedAbsoluteUrlField  # noqa
 
 
 class TranslatableModelSerializer(serializers.ModelSerializer):

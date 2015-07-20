@@ -6,6 +6,8 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
 from rest_framework.compat import OrderedDict
+from parler.models import TranslatedFieldsModel
+from parler.utils.context import switch_language
 from parler_rest.utils import create_translated_fields_serializer
 
 
@@ -81,7 +83,7 @@ class TranslatedFieldsField(serializers.Field):
             raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
         # Split into a dictionary per language
-        result = serializers.OrderedDict()
+        result = OrderedDict()
         for translation in value.all():  # value = translations related manager
             result[translation.language_code] = serializer.to_representation(translation)
 
@@ -133,3 +135,17 @@ class TranslatedField(serializers.ReadOnlyField):
 
     def to_representation(self, value):
         return value
+
+
+class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):
+    """
+    Allow adding an absolute URL to a given translation.
+    """
+    def get_attribute(self, instance):
+        assert isinstance(instance, TranslatedFieldsModel), "The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer"
+        return instance
+
+    def to_representation(self, value):
+        request = self.context['request']
+        with switch_language(value.master, value.language_code):
+            return request.build_absolute_uri(value.master.get_absolute_url())
