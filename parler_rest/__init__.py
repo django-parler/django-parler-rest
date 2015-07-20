@@ -4,4 +4,4 @@ This package provides support for integrating translatable fields into *django-r
 """
 
 # following PEP 440
-__version__ = "1.3a1"
+__version__ = "1.3b1"
