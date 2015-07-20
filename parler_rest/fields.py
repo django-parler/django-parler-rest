@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
 from rest_framework.compat import OrderedDict
+from rest_framework.fields import SkipField
 from parler.models import TranslatedFieldsModel
 from parler.utils.context import switch_language
 from parler_rest.utils import create_translated_fields_serializer
@@ -142,7 +143,11 @@ class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):
     Allow adding an absolute URL to a given translation.
     """
     def get_attribute(self, instance):
-        assert isinstance(instance, TranslatedFieldsModel), "The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer"
+        # When handling the create() all, skip this field.
+        if isinstance(instance, (dict, OrderedDict)):
+            raise SkipField()
+
+        assert isinstance(instance, TranslatedFieldsModel), "The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, not on a {0}".format(instance.__class__)
         return instance
 
     def to_representation(self, value):
