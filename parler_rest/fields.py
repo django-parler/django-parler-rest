@@ -33,8 +33,10 @@ class TranslatedFieldsField(serializers.Field):
         may create a serializer class on the fly if no custom class was specified.
         """
         super(TranslatedFieldsField, self).bind(field_name, parent)
-        # Expect 1-on-1 for now.
-        related_name = field_name
+
+        # Allow using source as alias,
+        # but it should not be a dotted path for now
+        related_name = self.source
 
         # This could all be done in __init__(), but by moving the code here,
         # it's possible to auto-detect the parent model.
