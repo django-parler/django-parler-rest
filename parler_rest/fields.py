@@ -69,7 +69,11 @@ class TranslatedFieldsField(serializers.Field):
             return
 
         # Only need one serializer to create the native objects
-        serializer = self.serializer_class()
+        serializer = self.serializer_class(
+            instance=self.parent.instance,  # Typically None
+            context=self.context,
+            partial=self.parent.partial
+        )
 
         # Don't need to have a 'language_code', it will be split up already,
         # so this should avoid redundant output.
