@@ -92,6 +92,13 @@ If you have any other valuable contribution, suggestion or idea,
 please let us know as well because we will look into it.
 Pull requests are welcome too. :-)
 
+Running tests
+-------------
+
+Tests are run with `py.test`::
+
+    python setup.py test  # install dependencies and run tests with coverage
+
 
 .. _django-parler: https://github.com/edoburu/django-parler
 .. _django-rest-framework: http://www.django-rest-framework.org/

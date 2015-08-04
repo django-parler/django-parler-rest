@@ -29,11 +29,11 @@ class Migration(migrations.Migration):
                 ('language_code', models.CharField(max_length=15, verbose_name='Language', db_index=True)),
                 ('name', models.CharField(max_length=200, verbose_name='name')),
                 ('url', models.URLField(verbose_name='webpage', blank=True)),
-                ('master', models.ForeignKey(related_name='translations', editable=False, to='testapp.Country', null=True)),
+                ('master', models.ForeignKey(related_name='translations', editable=False, to='testproj.Country', null=True)),
             ],
             options={
                 'managed': True,
-                'db_table': 'testapp_country_translation',
+                'db_table': 'testproj_country_translation',
                 'db_tablespace': '',
                 'default_permissions': (),
                 'verbose_name': 'country Translation',

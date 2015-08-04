@@ -37,9 +37,9 @@ class TranslatedFieldsField(serializers.Field):
         """
         super(TranslatedFieldsField, self).bind(field_name, parent)
 
-        # Allow using source as alias,
+        # Expect 1-on-1 for now. Allow using source as alias,
         # but it should not be a dotted path for now
-        related_name = self.source
+        related_name = self.source or field_name
 
         # This could all be done in __init__(), but by moving the code here,
         # it's possible to auto-detect the parent model.
@@ -50,7 +50,7 @@ class TranslatedFieldsField(serializers.Field):
         if self.serializer_class is None:
             # Auto detect parent model
             if self.shared_model is None:
-                self.shared_model = parent.opts.model
+                self.shared_model = parent.Meta.model
 
             # Create serializer based on shared model.
             translated_model = self.shared_model._parler_meta[related_name]
