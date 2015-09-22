@@ -95,7 +95,7 @@ class TranslatedFieldsField(serializers.Field):
         for lang_code, model_fields in data.items():
             serializer = self.serializer_class(data=model_fields)
             if serializer.is_valid():
-                result[lang_code] = serializer.data
+                result[lang_code] = serializer.validated_data
             else:
                 errors[lang_code] = serializer.errors
 
