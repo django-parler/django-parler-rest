@@ -80,6 +80,16 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.assertIn('name', serializer.errors['translations']['en'])
         self.assertIn('url', serializer.errors['translations']['es'])
 
+    def test_translations_validation_empty(self):
+        for empty_value in (None, {}, '', ):
+            data = {
+                'country_code': 'FR',
+                'translations': empty_value
+            }
+            serializer = CountryTranslatedSerializer(data=data)
+            self.assertFalse(serializer.is_valid())
+            self.assertIn('translations', serializer.errors)
+
     def test_tranlations_saving_on_create(self):
         data = {
             'country_code': 'FR',
