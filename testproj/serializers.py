@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from rest_framework import serializers
+
 from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
 
 from .models import Country
-from rest_framework.serializers import ModelSerializer
 
 
 class CountryTranslatedSerializer(TranslatableModelSerializer):
@@ -36,7 +37,7 @@ class CountryExplicitTranslatedSerializer(TranslatableModelSerializer):
     A serializer with explicit translation serializer.
     """
 
-    class CountryTranslatedFieldsSerializer(ModelSerializer):
+    class CountryTranslatedFieldsSerializer(serializers.ModelSerializer):
         class Meta:
             model = Country._parler_meta.root_model
             fields = ("name",)  # Skip url for the hell of it
@@ -46,3 +47,12 @@ class CountryExplicitTranslatedSerializer(TranslatableModelSerializer):
     class Meta:
         model = Country
         fields = ('pk', 'country_code', 'trans')
+
+
+class ContinentCountriesTranslatedSerializer(serializers.Serializer):
+    """
+    A serializer with a nested translation serializer.
+    """
+
+    continent = serializers.CharField()
+    countries = CountryTranslatedSerializer(many=True)

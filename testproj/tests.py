@@ -17,7 +17,8 @@ from .models import Country
 from .serializers import (
     CountryTranslatedSerializer,
     CountryAutoSharedModelTranslatedSerializer,
-    CountryExplicitTranslatedSerializer
+    CountryExplicitTranslatedSerializer,
+    ContinentCountriesTranslatedSerializer,
 )
 
 
@@ -192,6 +193,29 @@ class CountryTranslatedSerializerTestCase(TestCase):
         assert instance.name == "Spain"
         instance.set_current_language("fi")
         assert instance.name == "Espanja"
+
+    def test_nested_translated_serializer(self):
+        data = {
+            "continent": "Europe",
+            "countries": [{
+                'country_code': 'FR',
+                'translations': {
+                    'en': {
+                        'name': "France",
+                        'url': "http://en.wikipedia.org/wiki/France"
+                    },
+                    'es': {
+                        'name': "Francia",
+                        'url': "http://es.wikipedia.org/wiki/Francia"
+                    },
+                }
+            }]
+        }
+        serializer = ContinentCountriesTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        nested_data = serializer.validated_data['countries'][0]
+        expected = data['countries'][0]
+        six.assertCountEqual(self, nested_data, expected)
 
 
 class ParlerRestUtilsTestCase(unittest.TestCase):
