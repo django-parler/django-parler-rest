@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""This package provides support for integrating translatable fields into *django-rest-framework*."""
-# Extracted from django-parler 1.2 git
+"""
+This package provides support for integrating translatable fields into *django-rest-framework*.
+"""
+
 # following PEP 440
-__version__ = "1.2.1"
+__version__ = "1.3b1"

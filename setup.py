@@ -4,6 +4,27 @@ from os import path
 import codecs
 import re
 import sys
+from setuptools.command.test import test as TestCommand
+
+
+class PyTest(TestCommand):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+    DEFAULT_PYTEST_ARGS = "-vvv --cov parler_rest --cov-report html testproj"
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = []
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+
+        errno = pytest.main(self.pytest_args or self.DEFAULT_PYTEST_ARGS)
+        sys.exit(errno)
 
 
 def read(*parts):
@@ -22,7 +43,7 @@ def find_version(*parts):
 setup(
     name='django-parler-rest',
     version=find_version('parler_rest', '__init__.py'),
-    license='Apache License, Version 2.0',
+    license='Apache 2.0',
 
     install_requires=[
         'django-parler>=1.2',
@@ -31,6 +52,14 @@ setup(
     requires=[
         'Django (>=1.4.2)',
     ],
+    tests_require=[
+        'django>=1.8',
+        'six==1.9.0',
+        'pytest==2.7.1',
+        'pytest-django==2.8.0',
+        'pytest-cov==1.8.1',
+    ],
+    cmdclass={'test': PyTest},
 
     description='Multilingual support for django-rest-framework',
     long_description=read('README.rst'),
@@ -41,7 +70,7 @@ setup(
     url='https://github.com/edoburu/django-parler-rest',
     download_url='https://github.com/edoburu/django-parler-rest/zipball/master',
 
-    packages=find_packages(exclude=('example*',)),
+    packages=['parler_rest'],
     include_package_data=True,
 
     zip_safe=False,
@@ -55,8 +84,9 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        #'Programming Language :: Python :: 3.2',
-        #'Programming Language :: Python :: 3.3',
+        # 'Programming Language :: Python :: 3.2',
+        # 'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Application Frameworks',

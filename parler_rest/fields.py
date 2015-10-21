@@ -1,28 +1,33 @@
 # -*- coding: utf-8 -*-
-
-"""Custom serializer fields for nested translations."""
-
+"""
+Custom serializer fields for nested translations.
+"""
 from __future__ import unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-
+from rest_framework.compat import OrderedDict
+from rest_framework.fields import SkipField
+from parler.models import TranslatedFieldsModel
+from parler.utils.context import switch_language
 from parler_rest.utils import create_translated_fields_serializer
 
 
 class TranslatedFieldsField(serializers.Field):
-
-    """Exposing translated fields for a TranslatableModel in REST style."""
-
+    """
+    Exposing all translated fields for a TranslatableModel in REST style.
+    """
     default_error_messages = dict(serializers.Field.default_error_messages, **{
         'invalid': _("Input is not a valid dict"),
         'empty': _("Translations may not be empty.")
     })
 
     def __init__(self, *args, **kwargs):
-        """Receive custom serializer class and model."""
+        """
+        Receive custom serializer class and model.
+        """
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
 
@@ -30,14 +35,17 @@ class TranslatedFieldsField(serializers.Field):
         super(TranslatedFieldsField, self).__init__(*args, **kwargs)
 
     def bind(self, field_name, parent):
-        """Create translation serializer dynamically.
+        """
+        Create translation serializer dynamically.
 
         Takes translatable model class (shared_model) from parent serializer and it
         may create a serializer class on the fly if no custom class was specified.
         """
         super(TranslatedFieldsField, self).bind(field_name, parent)
-        # Expect 1-on-1 for now.
-        related_name = field_name
+
+        # Expect 1-on-1 for now. Allow using source as alias,
+        # but it should not be a dotted path for now
+        related_name = self.source or field_name
 
         # This could all be done in __init__(), but by moving the code here,
         # it's possible to auto-detect the parent model.
@@ -48,7 +56,7 @@ class TranslatedFieldsField(serializers.Field):
         if self.serializer_class is None:
             # Auto detect parent model
             if self.shared_model is None:
-                self.shared_model = parent.opts.model
+                self.shared_model = parent.Meta.model
 
             # Create serializer based on shared model.
             translated_model = self.shared_model._parler_meta[related_name]
@@ -59,13 +67,9 @@ class TranslatedFieldsField(serializers.Field):
         else:
             self.shared_model = self.serializer_class.Meta.model
 
-            # Don't need to have a 'language_code', it will be split up already,
-            # so this should avoid redundant output.
-            if 'language_code' in self.serializer_class.base_fields:
-                raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
-
     def to_representation(self, value):
-        """Serialize translated fields.
+        """
+        Serialize translated fields.
 
         Simply iterate over available translations and, for each language,
         delegate serialization logic to the translation model serializer.
@@ -74,17 +78,27 @@ class TranslatedFieldsField(serializers.Field):
             return
 
         # Only need one serializer to create the native objects
-        serializer = self.serializer_class()
+        serializer = self.serializer_class(
+            instance=self.parent.instance,  # Typically None
+            context=self.context,
+            partial=self.parent.partial
+        )
+
+        # Don't need to have a 'language_code', it will be split up already,
+        # so this should avoid redundant output.
+        if 'language_code' in serializer.fields:
+            raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
         # Split into a dictionary per language
-        result = serializers.OrderedDict()
+        result = OrderedDict()
         for translation in value.all():  # value = translations related manager
             result[translation.language_code] = serializer.to_representation(translation)
 
         return result
 
     def to_internal_value(self, data):
-        """Deserialize data from translations fields.
+        """
+        Deserialize data from translations fields.
 
         For each received language, delegate validation logic to
         the translation model serializer.
@@ -108,3 +122,43 @@ class TranslatedFieldsField(serializers.Field):
         if errors:
             raise serializers.ValidationError(errors)
         return result
+
+
+class TranslatedField(serializers.ReadOnlyField):
+    """
+    Read-only field to expose a single object property in all it's languages.
+    """
+
+    def get_attribute(self, instance):
+        # Instead of fetching the attribute with getattr() (that proxies to the Parler TranslatableField),
+        # read the translation model directly to fetch all languages, and combine that into a dict.
+        model = instance._parler_meta.get_model_by_field(self.source)  # This already validates the fields existance
+        extension = instance._parler_meta[model]
+        translations = getattr(instance, extension.rel_name)
+
+        # Split into a dictionary per language
+        value = OrderedDict()
+        for translation in translations.all():  # Allow prefetch_related() to do it's work
+            value[translation.language_code] = getattr(translation, self.source)
+        return value
+
+    def to_representation(self, value):
+        return value
+
+
+class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):
+    """
+    Allow adding an absolute URL to a given translation.
+    """
+    def get_attribute(self, instance):
+        # When handling the create() all, skip this field.
+        if isinstance(instance, (dict, OrderedDict)):
+            raise SkipField()
+
+        assert isinstance(instance, TranslatedFieldsModel), "The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, not on a {0}".format(instance.__class__)
+        return instance
+
+    def to_representation(self, value):
+        request = self.context['request']
+        with switch_language(value.master, value.language_code):
+            return request.build_absolute_uri(value.master.get_absolute_url())

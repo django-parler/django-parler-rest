@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-
-"""Various utilities to ease integration with Rest Framework."""
-
+"""
+Various utilities to ease integration with Rest Framework.
+"""
 from rest_framework import serializers
 
 
 def create_translated_fields_serializer(shared_model, meta=None, related_name=None, **fields):
-    """Create a Rest Framework serializer class for a translated fields model.
+    """
+    Create a Rest Framework serializer class for a translated fields model.
 
     :param shared_model: The shared model.
     :type shared_model: :class:`parler.models.TranslatableModel`
