@@ -155,8 +155,7 @@ class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):
         if isinstance(instance, (dict, OrderedDict)):
             raise SkipField()
 
-        assert (
-            isinstance(instance, TranslatedFieldsModel),
+        assert isinstance(instance, TranslatedFieldsModel), (
             ("The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, "
              " not on a {0}".format(instance.__class__))
         )
