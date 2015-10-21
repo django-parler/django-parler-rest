@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Changes in version 1.3.1 (git)
+-------------------------------
+
+* Fix translations ``to_representation`` using ``.data`` instead of ``.validated_data`` as it led to
+  incompatibilities with translations within nested serializers.
+* Added ``allow_empty`` option to ``parler_rest.fields.TranslatedFieldsField``. Disabled by default
+  as it might inadvertently allow objects without any available language.
+* Testing fixes
+
 Chages in version 1.3 (git)
 ---------------------------
 

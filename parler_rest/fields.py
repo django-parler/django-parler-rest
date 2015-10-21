@@ -12,6 +12,7 @@ from rest_framework.compat import OrderedDict
 from rest_framework.fields import SkipField
 from parler.models import TranslatedFieldsModel
 from parler.utils.context import switch_language
+
 from parler_rest.utils import create_translated_fields_serializer
 
 
