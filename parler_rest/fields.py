@@ -155,7 +155,12 @@ class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):
         if isinstance(instance, (dict, OrderedDict)):
             raise SkipField()
 
-        assert isinstance(instance, TranslatedFieldsModel), "The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, not on a {0}".format(instance.__class__)
+        assert (
+            isinstance(instance, TranslatedFieldsModel),
+            ("The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, "
+             " not on a {0}".format(instance.__class__))
+        )
+
         return instance
 
     def to_representation(self, value):
