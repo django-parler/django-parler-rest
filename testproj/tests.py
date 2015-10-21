@@ -4,14 +4,20 @@
 
 from __future__ import unicode_literals
 
+import unittest
+
 from django.test import TestCase
 
 import six
 
-from .models import Country
-from .serializers import CountryTranslatedSerializer, AutoSharedModelCountryTranslatedSerializer, \
-    ExplicitSerializerCountryTranslatedSerializer
 from parler_rest.utils import create_translated_fields_serializer
+
+from .models import Country
+from .serializers import (
+    CountryTranslatedSerializer,
+    CountryAutoSharedModelTranslatedSerializer,
+    CountryExplicitTranslatedSerializer
+)
 
 
 class CountryTranslatedSerializerTestCase(TestCase):
@@ -149,40 +155,41 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.assertEqual(instance.name, "Espagne")
         self.assertEqual(instance.url, "http://fr.wikipedia.org/wiki/Espagne")
 
+    def test_deserialization_invalid_data_types(self):
+        data = {"translations": "this is not a dict"}
+        serializer = CountryTranslatedSerializer(self.instance, data=data, partial=True)
+        assert not serializer.is_valid()
 
-    def test_auto_shared_model(self):
-        s = AutoSharedModelCountryTranslatedSerializer(self.instance)
-        assert s.data["translations"]
+    def test_automatically_deduced_shared_model(self):
+        serializer = CountryAutoSharedModelTranslatedSerializer(self.instance)
+        assert serializer.data["translations"]
 
-
-    def test_explicit_serializer(self):
-        country = self.instance
-        s = ExplicitSerializerCountryTranslatedSerializer(country)
-        assert s.data["xl"]["en"]["name"] == "Spain"
-        assert not "url" in s.data["xl"]["en"]
-        assert s.data["xl"]["es"]["name"] == "España"
-        assert not "url" in s.data["xl"]["es"]
-        s = ExplicitSerializerCountryTranslatedSerializer(country, partial=True, data={
-            "xl": {"fi": {"name": "Espanja"}}
-        })
-        assert s.is_valid()
-        country = s.save()
+    def test_explicitly_declared_translation_field_serializer(self):
+        serializer = CountryExplicitTranslatedSerializer(self.instance)
+        assert serializer.data["trans"]["en"]["name"] == "Spain"
+        assert "url" not in serializer.data["trans"]["en"]
+        assert serializer.data["trans"]["es"]["name"] == "España"
+        assert "url" not in serializer.data["trans"]["es"]
+        data = {
+            "trans": {
+                "fi": {
+                    "name": "Espanja"
+                }
+            }
+        }
+        serializer = CountryExplicitTranslatedSerializer(self.instance, data=data, partial=True)
+        assert serializer.is_valid()
+        country = serializer.save()
         country.set_current_language("en")
         assert country.name == "Spain"
         country.set_current_language("fi")
         assert country.name == "Espanja"
 
 
-    def test_deserialization_data_types(self):
-        country = self.instance
-        s = CountryTranslatedSerializer(country, data={"translations": "this is not a dict"}, partial=True)
-        assert not s.is_valid()
+class ParlerRestUtilsTestCase(unittest.TestCase):
 
-class UtilsTestCase(TestCase):
-
-    def test_serializer_creation(self):
-        sx = create_translated_fields_serializer(Country)()
-        assert sx.fields["name"]
-        assert sx.fields["url"]
-        assert sx.fields["language_code"]
-
+    def test_automatic_translation_serializer_creation(self):
+        serializer = create_translated_fields_serializer(Country)()
+        assert serializer.fields["name"]
+        assert serializer.fields["url"]
+        assert serializer.fields["language_code"]
