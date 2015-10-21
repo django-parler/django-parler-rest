@@ -8,6 +8,7 @@ import unittest
 
 from django.test import TestCase
 
+from parler.tests.utils import override_parler_settings
 import six
 
 from parler_rest.utils import create_translated_fields_serializer
@@ -22,6 +23,10 @@ from .serializers import (
 
 class CountryTranslatedSerializerTestCase(TestCase):
 
+    # Disable cache as due to automatic db rollback the instance pk
+    # is the same for all tests and with the cache we'd mistakenly
+    # skips saves after the first test.
+    @override_parler_settings(PARLER_ENABLE_CACHING=False)
     def setUp(self):
         self.instance = Country.objects.create(
             country_code='ES', name="Spain",
@@ -29,7 +34,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         )
         self.instance.set_current_language('es')
         self.instance.name = "España"
-        self.instance.url = "http://es.wikipedia.org/wiki/Spain"
+        self.instance.url = "http://es.wikipedia.org/wiki/España"
         self.instance.save()
 
     def test_translations_serialization(self):
@@ -166,10 +171,13 @@ class CountryTranslatedSerializerTestCase(TestCase):
 
     def test_explicitly_declared_translation_field_serializer(self):
         serializer = CountryExplicitTranslatedSerializer(self.instance)
-        assert serializer.data["trans"]["en"]["name"] == "Spain"
-        assert "url" not in serializer.data["trans"]["en"]
-        assert serializer.data["trans"]["es"]["name"] == "España"
-        assert "url" not in serializer.data["trans"]["es"]
+        translations = serializer.data["trans"]
+        assert translations["en"]["name"] == "Spain"
+        assert "url" not in translations["en"]
+        assert translations["es"]["name"] == "España"
+        assert "url" not in translations["es"]
+
+        # Test update:
         data = {
             "trans": {
                 "fi": {
@@ -179,11 +187,11 @@ class CountryTranslatedSerializerTestCase(TestCase):
         }
         serializer = CountryExplicitTranslatedSerializer(self.instance, data=data, partial=True)
         assert serializer.is_valid()
-        country = serializer.save()
-        country.set_current_language("en")
-        assert country.name == "Spain"
-        country.set_current_language("fi")
-        assert country.name == "Espanja"
+        instance = serializer.save()
+        instance.set_current_language("en")
+        assert instance.name == "Spain"
+        instance.set_current_language("fi")
+        assert instance.name == "Espanja"
 
 
 class ParlerRestUtilsTestCase(unittest.TestCase):
