@@ -26,6 +26,10 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.instance.url = "http://es.wikipedia.org/wiki/Spain"
         self.instance.save()
 
+    def tearDown(self):
+        # Delete our instance to make sure that no language data is cached
+        self.instance.delete()
+
     def test_translations_serialization(self):
         expected = {
             'pk': self.instance.pk,
