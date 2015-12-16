@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from rest_framework import serializers
+
 from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
 
 from .models import Country
-from rest_framework.serializers import ModelSerializer
 
 
 class CountryTranslatedSerializer(TranslatableModelSerializer):
+    """
+    A serializer with translated fields deduced and translation model explicitly declared.
+    """
+
     translations = TranslatedFieldsField(shared_model=Country)
 
     class Meta:
@@ -15,7 +20,11 @@ class CountryTranslatedSerializer(TranslatableModelSerializer):
         fields = ('pk', 'country_code', 'translations')
 
 
-class AutoSharedModelCountryTranslatedSerializer(TranslatableModelSerializer):
+class CountryAutoSharedModelTranslatedSerializer(TranslatableModelSerializer):
+    """
+    A serializer with both translated fields and translation model deduced.
+    """
+
     translations = TranslatedFieldsField()
 
     class Meta:
@@ -23,15 +32,27 @@ class AutoSharedModelCountryTranslatedSerializer(TranslatableModelSerializer):
         fields = ('pk', 'country_code', 'translations')
 
 
-class CountryTranslatedFieldsSerializer(ModelSerializer):
-    class Meta:
-        model = Country._parler_meta.root_model
-        fields = ("name",)  # Skip url for the hell of it
+class CountryExplicitTranslatedSerializer(TranslatableModelSerializer):
+    """
+    A serializer with explicit translation serializer.
+    """
 
+    class CountryTranslatedFieldsSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Country._parler_meta.root_model
+            fields = ("name",)  # Skip url for the hell of it
 
-class ExplicitSerializerCountryTranslatedSerializer(TranslatableModelSerializer):
-    xl = TranslatedFieldsField(serializer_class=CountryTranslatedFieldsSerializer, source="translations")
+    trans = TranslatedFieldsField(serializer_class=CountryTranslatedFieldsSerializer, source="translations")
 
     class Meta:
         model = Country
-        fields = ('pk', 'country_code', 'xl')
+        fields = ('pk', 'country_code', 'trans')
+
+
+class ContinentCountriesTranslatedSerializer(serializers.Serializer):
+    """
+    A serializer with a nested translation serializer.
+    """
+
+    continent = serializers.CharField()
+    countries = CountryTranslatedSerializer(many=True)

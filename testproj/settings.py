@@ -54,8 +54,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'testproj.urls'
-
 WSGI_APPLICATION = 'testproj.wsgi.application'
 
 

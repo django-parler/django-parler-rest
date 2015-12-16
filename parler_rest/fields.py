@@ -3,18 +3,21 @@
 Custom serializer fields for nested translations.
 """
 from __future__ import unicode_literals
+from django.core.exceptions import ImproperlyConfigured
+from django.utils.translation import ugettext_lazy as _
+
+from rest_framework import serializers
+from rest_framework.fields import SkipField
+from parler.models import TranslatedFieldsModel
+from parler.utils.context import switch_language
+
+from parler_rest.utils import create_translated_fields_serializer
 
 try:
     from collections import OrderedDict
 except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
 
-from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers
-from rest_framework.fields import SkipField
-from parler.models import TranslatedFieldsModel
-from parler.utils.context import switch_language
-from parler_rest.utils import create_translated_fields_serializer
 
 
 class TranslatedFieldsField(serializers.Field):
@@ -22,7 +25,8 @@ class TranslatedFieldsField(serializers.Field):
     Exposing all translated fields for a TranslatableModel in REST style.
     """
     default_error_messages = dict(serializers.Field.default_error_messages, **{
-        'invalid': "Input is not a valid dict",
+        'invalid': _("Input is not a valid dict"),
+        'empty': _("Translations may not be empty.")
     })
 
     def __init__(self, *args, **kwargs):
@@ -31,6 +35,8 @@ class TranslatedFieldsField(serializers.Field):
         """
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
+
+        self.allow_empty = kwargs.pop('allow_empty', False)
         super(TranslatedFieldsField, self).__init__(*args, **kwargs)
 
     def bind(self, field_name, parent):
@@ -107,12 +113,14 @@ class TranslatedFieldsField(serializers.Field):
 
         if not isinstance(data, dict):
             self.fail('invalid')
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
 
         result, errors = {}, {}
         for lang_code, model_fields in data.items():
             serializer = self.serializer_class(data=model_fields)
             if serializer.is_valid():
-                result[lang_code] = serializer.data
+                result[lang_code] = serializer.validated_data
             else:
                 errors[lang_code] = serializer.errors
 
@@ -152,7 +160,11 @@ class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):
         if isinstance(instance, (dict, OrderedDict)):
             raise SkipField()
 
-        assert isinstance(instance, TranslatedFieldsModel), "The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, not on a {0}".format(instance.__class__)
+        assert isinstance(instance, TranslatedFieldsModel), (
+            ("The TranslatedAbsoluteUrlField can only be used on a TranslatableModelSerializer, "
+             " not on a {0}".format(instance.__class__))
+        )
+
         return instance
 
     def to_representation(self, value):
