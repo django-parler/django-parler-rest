@@ -26,7 +26,7 @@ class TranslatedFieldsField(serializers.Field):
     """
     default_error_messages = dict(serializers.Field.default_error_messages, **{
         'invalid': _("Input is not a valid dict"),
-        'empty': _("Translations may not be empty.")
+        'empty': _("This field may not be empty.")
     })
 
     def __init__(self, *args, **kwargs):
