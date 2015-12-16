@@ -3,9 +3,14 @@
 Custom serializer fields for nested translations.
 """
 from __future__ import unicode_literals
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from django.utils.datastructures import SortedDict as OrderedDict
+
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
-from rest_framework.compat import OrderedDict
 from rest_framework.fields import SkipField
 from parler.models import TranslatedFieldsModel
 from parler.utils.context import switch_language
