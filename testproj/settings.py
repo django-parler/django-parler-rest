@@ -28,7 +28,16 @@ SECRET_KEY = '87$noc%^65_5qgg_ngcsdqf&x$2663ch+7ke(5za1vtp!x!lgx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = True  # django < 1.8
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'OPTIONS': {
+            'debug': TEMPLATE_DEBUG,  # django >= 1.8
+        },
+    },
+]
 
 ALLOWED_HOSTS = []
 
