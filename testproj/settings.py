@@ -35,7 +35,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -44,16 +44,16 @@ INSTALLED_APPS = (
     'parler',
     'rest_framework',
     'testproj',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
+]
 
 WSGI_APPLICATION = 'testproj.wsgi.application'
 
@@ -73,10 +73,10 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en'
 
-LANGUAGES = (
+LANGUAGES = [
     ('en', _("english")),
     ('es', _("spanish")),
-)
+]
 
 TIME_ZONE = 'UTC'
 
