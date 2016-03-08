@@ -12,6 +12,7 @@ from __future__ import unicode_literals
 
 import os.path
 
+import django
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -28,31 +29,45 @@ SECRET_KEY = '87$noc%^65_5qgg_ngcsdqf&x$2663ch+7ke(5za1vtp!x!lgx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+if django.VERSION >= (1, 8):
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'OPTIONS': {
+                'debug': True,
+            },
+        },
+    ]
+
+else:
+    TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'parler',
     'rest_framework',
     'testproj',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
+]
+
+ROOT_URLCONF = 'testproj.urls'
 
 WSGI_APPLICATION = 'testproj.wsgi.application'
 
@@ -72,10 +87,10 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en'
 
-LANGUAGES = (
+LANGUAGES = [
     ('en', _("english")),
     ('es', _("spanish")),
-)
+]
 
 TIME_ZONE = 'UTC'
 
