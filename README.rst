@@ -1,6 +1,19 @@
 django-parler-rest
 ==================
 
+.. image:: https://travis-ci.org/edoburu/django-parler-rest.svg?branch=master
+    :target: http://travis-ci.org/edoburu/django-parler-rest
+.. image:: https://img.shields.io/pypi/v/django-parler-rest.svg
+    :target: https://pypi.python.org/pypi/django-parler-rest/
+.. image:: https://img.shields.io/pypi/dm/django-parler-rest.svg
+    :target: https://pypi.python.org/pypi/django-parler-rest/
+.. image:: https://img.shields.io/badge/wheel-yes-green.svg
+    :target: https://pypi.python.org/pypi/django-parler-rest/
+.. image:: https://img.shields.io/pypi/l/django-parler-rest.svg
+    :target: https://pypi.python.org/pypi/django-parler-rest/
+.. image:: https://coveralls.io/repos/edoburu/django-parler-rest/badge.svg?branch=master
+    :target: https://coveralls.io/github/edoburu/django-parler-rest?branch=master
+
 Adding translation support to django-rest-framework_.
 
 This package adds support for TranslatableModels from django-parler_ to django-rest-framework_.
