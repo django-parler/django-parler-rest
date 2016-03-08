@@ -11,8 +11,8 @@ django-parler-rest
     :target: https://pypi.python.org/pypi/django-parler-rest/
 .. image:: https://img.shields.io/pypi/l/django-parler-rest.svg
     :target: https://pypi.python.org/pypi/django-parler-rest/
-.. image:: https://coveralls.io/repos/edoburu/django-parler-rest/badge.svg?branch=master
-    :target: https://coveralls.io/github/edoburu/django-parler-rest?branch=master
+.. image:: https://img.shields.io/codecov/c/github/edoburu/django-parler-rest/master.svg
+    :target: https://codecov.io/github/edoburu/django-parler-rest?branch=master
 
 Adding translation support to django-rest-framework_.
 
