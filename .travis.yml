@@ -1,0 +1,36 @@
+sudo: false
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+env:
+  - DJANGO="django>=1.7.0,<1.8.0"
+  - DJANGO="django>=1.8.0,<1.9.0"
+  - DJANGO="django>=1.9.0,<1.10.0"
+matrix:
+  exclude:
+  - python: "3.3"
+    env: DJANGO="django>=1.9.0,<1.10.0"
+
+install:
+  - travis_retry pip install -q coveralls  # installs coverage
+  - travis_retry pip install $DJANGO
+  - pip install -e .
+
+script:
+  - coverage run --source=parler_rest runtests.py
+
+after_success:
+  - coveralls --verbose
+
+branches:
+  only:
+    - master
+
+notifications:
+  email:
+    recipients:
+      - travis@edoburu.nl
+    on_success: never
+    on_failure: always
