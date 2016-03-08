@@ -7,9 +7,8 @@ from __future__ import unicode_literals
 import unittest
 
 from django.test import TestCase
-
+from django.utils import six
 from parler.tests.utils import override_parler_settings
-import six
 
 from parler_rest.utils import create_translated_fields_serializer
 

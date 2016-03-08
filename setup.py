@@ -54,7 +54,6 @@ setup(
     ],
     tests_require=[
         'django>=1.8',
-        'six==1.9.0',
         'pytest==2.7.1',
         'pytest-django==2.8.0',
         'pytest-cov==1.8.1',
