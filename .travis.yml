@@ -1,35 +1,36 @@
 sudo: false
 language: python
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
+- '2.7'
+- '3.3'
+- '3.4'
 env:
-  - DJANGO="django>=1.7.0,<1.8.0"
-  - DJANGO="django>=1.8.0,<1.9.0"
-  - DJANGO="django>=1.9.0,<1.10.0"
+- DJANGO="django>=1.7.0,<1.8.0"
+- DJANGO="django>=1.8.0,<1.9.0"
+- DJANGO="django>=1.9.0,<1.10.0"
 matrix:
   exclude:
-  - python: "3.3"
+  - python: '3.3'
     env: DJANGO="django>=1.9.0,<1.10.0"
-
 before_install:
-  - pip install codecov
+- pip install codecov
 install:
-  - pip install $DJANGO
-  - pip install -e .
+- pip install $DJANGO
+- pip install -e .
 script:
-  - coverage run --source=parler_rest runtests.py
+- coverage run --source=parler_rest runtests.py
 after_success:
-  - codecov
-
+- codecov
 branches:
   only:
-    - master
-
+  - master
 notifications:
   email:
     recipients:
-      - travis@edoburu.nl
+    - travis@edoburu.nl
+    on_success: never
+    on_failure: always
+  slack:
+    secure: M/+por3krrxz88oO5eJtnuEosBH1aP/if9tJzEYmlTrUOUttDjywT2FRU7+7rwU8KXzFGh3R1Qk8dboGUKGMXu/YA6kgKnb0NKXuC5mCfNeQYGNgIKRhkZiBVsRwbE4b7pQE0B4uxgWtPM3urD/q8Y+rIKHf7Cj9GGcW1NrRGAc=
     on_success: never
     on_failure: always
