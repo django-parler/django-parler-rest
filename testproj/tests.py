@@ -8,6 +8,7 @@ import unittest
 
 from django.test import TestCase
 from django.utils import six
+
 from parler.tests.utils import override_parler_settings
 
 from parler_rest.utils import create_translated_fields_serializer
@@ -53,6 +54,30 @@ class CountryTranslatedSerializerTestCase(TestCase):
             }
         }
         serializer = CountryTranslatedSerializer(self.instance)
+        six.assertCountEqual(self, serializer.data, expected)
+
+    def test_translations_serialization_only_some_languages(self):
+        self.instance.set_current_language('fr')
+        self.instance.name = "Espagne"
+        self.instance.url = "https://fr.wikipedia.org/wiki/Espagne"
+        self.instance.save_translations()
+        # So we got: en, es, fr: Let's drop the english
+        expected = {
+            'pk': self.instance.pk,
+            'country_code': 'ES',
+            'translations': {
+                'es': {
+                    'name': "Spain",
+                    'url': "http://en.wikipedia.org/wiki/Spain"
+                },
+                'fr': {
+                    'name': "Espagne",
+                    'url': "https://fr.wikipedia.org/wiki/Espagne"
+                },
+            }
+        }
+        context = {'languages': ['es', 'fr']}
+        serializer = CountryTranslatedSerializer(self.instance, context=context)
         six.assertCountEqual(self, serializer.data, expected)
 
     def test_translations_validation(self):
