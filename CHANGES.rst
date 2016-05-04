@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Changes in version 1.4 (2016-05-04)
+-----------------------------------
+
+* Added ``languages`` context variable to ``TranslatedSerializer``.
+
+
 Changes in version 1.3 (2015-12-16)
 -----------------------------------
 
