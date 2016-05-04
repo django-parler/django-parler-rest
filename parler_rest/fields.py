@@ -19,7 +19,6 @@ except ImportError:
     from django.utils.datastructures import SortedDict as OrderedDict
 
 
-
 class TranslatedFieldsField(serializers.Field):
     """
     Exposing all translated fields for a TranslatableModel in REST style.
@@ -78,6 +77,9 @@ class TranslatedFieldsField(serializers.Field):
 
         Simply iterate over available translations and, for each language,
         delegate serialization logic to the translation model serializer.
+
+        Output languages can be selected by passing a list of language codes,
+        `languages`, within the serialization context.
         """
         if value is None:
             return
@@ -94,9 +96,14 @@ class TranslatedFieldsField(serializers.Field):
         if 'language_code' in serializer.fields:
             raise ImproperlyConfigured("Serializer may not have a 'language_code' field")
 
+        translations = value.all()  # value = translations related manager
+        languages = self.context.get('languages')
+        if languages:
+            translations = translations.filter(language_code__in=languages)
+
         # Split into a dictionary per language
         result = OrderedDict()
-        for translation in value.all():  # value = translations related manager
+        for translation in translations:
             result[translation.language_code] = serializer.to_representation(translation)
 
         return result
