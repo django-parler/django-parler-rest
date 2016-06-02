@@ -48,4 +48,7 @@ class TranslatableModelSerializer(serializers.ModelSerializer):
                 translation = instance._get_translated_model(lang_code, auto_create=True, meta=meta)
                 for field, value in model_fields.items():
                     setattr(translation, field, value)
-                translation.save()
+
+        # Go through the same hooks as the regular model,
+        # instead of calling translation.save() directly.
+        instance.save_translations()
