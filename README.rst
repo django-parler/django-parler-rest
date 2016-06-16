@@ -32,7 +32,7 @@ Usage
 * First make sure you have django-parler_ installed and configured.
 * Use the serializers as demonstrated below to expose the translations.
 
-First configure a model, following the `django-parler documentation <http://django-parler.readthedocs.org/en/latest/>`_::
+First configure a model, following the `django-parler documentation <https://django-parler.readthedocs.io/en/latest/>`_::
 
     from django.db import models
     from parler.models import TranslatableModel, TranslatedFields
