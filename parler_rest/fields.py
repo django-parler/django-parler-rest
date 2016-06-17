@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.fields import SkipField
-from parler.models import TranslatedFieldsModel
+from parler.models import TranslatableModel, TranslatedFieldsModel
 from parler.utils.context import switch_language
 
 from parler_rest.utils import create_translated_fields_serializer
@@ -45,6 +45,9 @@ class TranslatedFieldsField(serializers.Field):
         Takes translatable model class (shared_model) from parent serializer and it
         may create a serializer class on the fly if no custom class was specified.
         """
+        if not issubclass(parent.Meta.model, TranslatableModel):
+            raise TypeError("Expected 'TranslatableModel' for the parent model")
+
         super(TranslatedFieldsField, self).bind(field_name, parent)
 
         # Expect 1-on-1 for now. Allow using source as alias,
@@ -69,7 +72,12 @@ class TranslatedFieldsField(serializers.Field):
                 meta={'fields': translated_model.get_translated_fields()}
             )
         else:
-            self.shared_model = self.serializer_class.Meta.model
+            if not issubclass(self.serializer_class.Meta.model, TranslatedFieldsModel):
+                raise TypeError("Expected 'TranslatedFieldsModel' for the serializer model")
+
+            # On Django 1.8+ this works:
+            #translated_fields_model = self.serializer_class.Meta.model
+            #self.shared_model = translated_fields_model.master.field.related.model
 
     def to_representation(self, value):
         """
