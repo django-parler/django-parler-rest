@@ -1,6 +1,24 @@
 Changelog
 =========
 
+Changes in version 1.4.2 (2016-06-17)
+-------------------------------------
+
+* Added type checking on the models used in the serializer.
+  This avoids nasty errors when the shared model is used accidently.
+
+For example, in Django 1.7 ``MyModel.translations.related.model`` resolved the translated model,
+but on Django 1.8+ it returns the parent model. ``MyModel.translations.related.related_model``
+should be used instead.
+
+
+Changes in version 1.4.1 (2016-06-02)
+-------------------------------------
+
+* Make sure the model's ``save_translations()`` and ``save_translation()`` methods are called,
+  in case those are overridden to provide extra changes.
+
+
 Changes in version 1.4 (2016-05-04)
 -----------------------------------
 
