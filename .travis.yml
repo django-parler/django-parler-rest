@@ -15,8 +15,7 @@ matrix:
 before_install:
 - pip install codecov
 install:
-- pip install $DJANGO
-- pip install -e .
+- pip install $DJANGO -e .
 script:
 - coverage run --source=parler_rest runtests.py
 after_success:
