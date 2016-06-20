@@ -54,5 +54,5 @@ Changes in version 1.2
 * Initial release, extracted from django-parler_ 1.2-git.
 
 
-.. _django-parler: https://github.com/edoburu/django-parler
+.. _django-parler: https://github.com/django-parler/django-parler
 .. _django-rest-framework: https://github.com/tomchristie/django-rest-framework

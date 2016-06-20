@@ -1,8 +1,8 @@
 django-parler-rest
 ==================
 
-.. image:: https://travis-ci.org/edoburu/django-parler-rest.svg?branch=master
-    :target: http://travis-ci.org/edoburu/django-parler-rest
+.. image:: https://travis-ci.org/django-parler/django-parler-rest.svg?branch=master
+    :target: http://travis-ci.org/django-parler/django-parler-rest
 .. image:: https://img.shields.io/pypi/v/django-parler-rest.svg
     :target: https://pypi.python.org/pypi/django-parler-rest/
 .. image:: https://img.shields.io/pypi/dm/django-parler-rest.svg
@@ -11,8 +11,8 @@ django-parler-rest
     :target: https://pypi.python.org/pypi/django-parler-rest/
 .. image:: https://img.shields.io/pypi/l/django-parler-rest.svg
     :target: https://pypi.python.org/pypi/django-parler-rest/
-.. image:: https://img.shields.io/codecov/c/github/edoburu/django-parler-rest/master.svg
-    :target: https://codecov.io/github/edoburu/django-parler-rest?branch=master
+.. image:: https://img.shields.io/codecov/c/github/django-parler/django-parler-rest/master.svg
+    :target: https://codecov.io/github/django-parler/django-parler-rest?branch=master
 
 Adding translation support to django-rest-framework_.
 
@@ -113,5 +113,5 @@ Tests are run with `py.test`::
     python setup.py test  # install dependencies and run tests with coverage
 
 
-.. _django-parler: https://github.com/edoburu/django-parler
+.. _django-parler: https://github.com/django-parler/django-parler
 .. _django-rest-framework: http://www.django-rest-framework.org/
