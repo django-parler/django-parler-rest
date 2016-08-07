@@ -5,10 +5,6 @@ django-parler-rest
     :target: http://travis-ci.org/django-parler/django-parler-rest
 .. image:: https://img.shields.io/pypi/v/django-parler-rest.svg
     :target: https://pypi.python.org/pypi/django-parler-rest/
-.. image:: https://img.shields.io/pypi/dm/django-parler-rest.svg
-    :target: https://pypi.python.org/pypi/django-parler-rest/
-.. image:: https://img.shields.io/badge/wheel-yes-green.svg
-    :target: https://pypi.python.org/pypi/django-parler-rest/
 .. image:: https://img.shields.io/pypi/l/django-parler-rest.svg
     :target: https://pypi.python.org/pypi/django-parler-rest/
 .. image:: https://img.shields.io/codecov/c/github/django-parler/django-parler-rest/master.svg
