@@ -45,9 +45,6 @@ class TranslatedFieldsField(serializers.Field):
         Takes translatable model class (shared_model) from parent serializer and it
         may create a serializer class on the fly if no custom class was specified.
         """
-        if not issubclass(parent.Meta.model, TranslatableModel):
-            raise TypeError("Expected 'TranslatableModel' for the parent model")
-
         super(TranslatedFieldsField, self).bind(field_name, parent)
 
         # Expect 1-on-1 for now. Allow using source as alias,
@@ -61,8 +58,14 @@ class TranslatedFieldsField(serializers.Field):
 
         # Fill in the blanks
         if self.serializer_class is None:
-            # Auto detect parent model
             if self.shared_model is None:
+                # Auto detect parent model
+                from .serializers import TranslatableModelSerializer
+                if not isinstance(parent, TranslatableModelSerializer):
+                    raise TypeError("Expected 'TranslatableModelSerializer' as serializer base class")
+                if not issubclass(parent.Meta.model, TranslatableModel):
+                    raise TypeError("Expected 'TranslatableModel' for the parent model")
+
                 self.shared_model = parent.Meta.model
 
             # Create serializer based on shared model.
