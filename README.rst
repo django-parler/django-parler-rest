@@ -28,7 +28,9 @@ Usage
 * First make sure you have django-parler_ installed and configured.
 * Use the serializers as demonstrated below to expose the translations.
 
-First configure a model, following the `django-parler documentation <https://django-parler.readthedocs.io/en/latest/>`_::
+First configure a model, following the `django-parler documentation <https://django-parler.readthedocs.io/en/latest/>`_:
+
+.. code-block:: python
 
     from django.db import models
     from parler.models import TranslatableModel, TranslatedFields
@@ -54,7 +56,9 @@ First configure a model, following the `django-parler documentation <https://dja
             return self.name
 
 
-The model translations can be exposed as a seperate serializer::
+The model translations can be exposed as a separate serializer:
+
+.. code-block:: python
 
     from rest_framework import serializers
     from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
@@ -69,7 +73,12 @@ The model translations can be exposed as a seperate serializer::
             fields = ('id', 'country_code', 'translations')
 
 
-This will expose the fields as a separate dictionary in the JSON output::
+.. note:: The ``TranslatedFieldsField`` can only be used in a serializer that inherits from ``TranslatableModelSerializer``.
+
+
+This will expose the fields as a separate dictionary in the JSON output:
+
+.. code-block:: application/json
 
     {
         "id": 528,
