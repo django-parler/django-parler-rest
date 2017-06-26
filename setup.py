@@ -48,6 +48,7 @@ setup(
     install_requires=[
         'django-parler>=1.2',
         'djangorestframework>=3.0',
+        'future==0.16.0',
     ],
     requires=[
         'Django (>=1.4.2)',
