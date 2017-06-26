@@ -131,7 +131,7 @@ class TranslatedFieldsField(serializers.Field):
         if data is None:
             return
 
-        if isinstance(data, basestring):
+        if isinstance(data, (str, unicode)):
             # try to convert to json
             try:
                 data = json.loads(data)
