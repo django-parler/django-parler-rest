@@ -98,6 +98,24 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.assertTrue(serializer.is_valid(), serializer.errors)
         six.assertCountEqual(self, serializer.validated_data['translations'], data['translations'])
 
+    def test_stringified_translations_validation(self):
+        data = '''{
+            'country_code': 'FR',
+            'translations': {
+                'en': {
+                    'name': "France",
+                    'url': "http://en.wikipedia.org/wiki/France"
+                },
+                'es': {
+                    'name': "Francia",
+                    'url': "http://es.wikipedia.org/wiki/Francia"
+                },
+            }
+        }'''
+        serializer = CountryTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        six.assertCountEqual(self, serializer.validated_data['translations'], json.loads(data)['translations'])
+
     def test_translated_fields_validation(self):
         data = {
             'country_code': 'FR',
@@ -128,7 +146,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
             self.assertFalse(serializer.is_valid())
             self.assertIn('translations', serializer.errors)
 
-    def test_tranlations_saving_on_create(self):
+    def test_translations_saving_on_create(self):
         data = {
             'country_code': 'FR',
             'translations': {
