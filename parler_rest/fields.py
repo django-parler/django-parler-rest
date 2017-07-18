@@ -3,6 +3,8 @@
 Custom serializer fields for nested translations.
 """
 from __future__ import unicode_literals
+import json
+from django.utils.six import string_types
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
@@ -24,6 +26,7 @@ class TranslatedFieldsField(serializers.Field):
     Exposing all translated fields for a TranslatableModel in REST style.
     """
     default_error_messages = dict(serializers.Field.default_error_messages, **{
+        'invalid_json_dump': _("Input is not a valid json dump"),
         'invalid': _("Input is not a valid dict"),
         'empty': _("This field may not be empty.")
     })
@@ -128,6 +131,13 @@ class TranslatedFieldsField(serializers.Field):
         """
         if data is None:
             return
+
+        if isinstance(data, string_types):
+            # try to convert to json
+            try:
+                data = json.loads(data)
+            except:
+                self.fail('invalid_json_dump')
 
         if not isinstance(data, dict):
             self.fail('invalid')
