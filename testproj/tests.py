@@ -4,6 +4,7 @@
 
 from __future__ import unicode_literals
 
+import json
 import unittest
 
 from django.test import TestCase
@@ -23,7 +24,6 @@ from .serializers import (
 
 
 class CountryTranslatedSerializerTestCase(TestCase):
-
     # Disable cache as due to automatic db rollback the instance pk
     # is the same for all tests and with the cache we'd mistakenly
     # skips saves after the first test.
@@ -99,22 +99,23 @@ class CountryTranslatedSerializerTestCase(TestCase):
         six.assertCountEqual(self, serializer.validated_data['translations'], data['translations'])
 
     def test_stringified_translations_validation(self):
-        data = '''{
-            'country_code': 'FR',
-            'translations': {
-                'en': {
-                    'name': "France",
-                    'url': "http://en.wikipedia.org/wiki/France"
-                },
-                'es': {
-                    'name': "Francia",
-                    'url': "http://es.wikipedia.org/wiki/Francia"
-                },
+        translations = {
+            'en': {
+                'name': "France",
+                'url': "http://en.wikipedia.org/wiki/France"
+            },
+            'es': {
+                'name': "Francia",
+                'url': "http://es.wikipedia.org/wiki/Francia"
             }
-        }'''
+        }
+        data = {
+            'country_code': 'FR',
+            'translations': json.dumps(translations)
+        }
         serializer = CountryTranslatedSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
-        six.assertCountEqual(self, serializer.validated_data['translations'], json.loads(data)['translations'])
+        six.assertCountEqual(self, serializer.validated_data['translations'], translations)
 
     def test_translated_fields_validation(self):
         data = {
@@ -137,7 +138,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.assertIn('url', serializer.errors['translations']['es'])
 
     def test_translations_validation_empty(self):
-        for empty_value in (None, {}, '', ):
+        for empty_value in (None, {}, '',):
             data = {
                 'country_code': 'FR',
                 'translations': empty_value
@@ -261,7 +262,6 @@ class CountryTranslatedSerializerTestCase(TestCase):
 
 
 class ParlerRestUtilsTestCase(unittest.TestCase):
-
     def test_automatic_translation_serializer_creation(self):
         serializer = create_translated_fields_serializer(Country)()
         assert serializer.fields["name"]
