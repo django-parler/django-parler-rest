@@ -4,7 +4,7 @@ Custom serializer fields for nested translations.
 """
 from __future__ import unicode_literals
 import json
-from past.builtins import basestring
+from django.utils.six import string_types
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
@@ -132,7 +132,7 @@ class TranslatedFieldsField(serializers.Field):
         if data is None:
             return
 
-        if isinstance(data, basestring):
+        if isinstance(data, string_types):
             # try to convert to json
             try:
                 data = json.loads(data)
