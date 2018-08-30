@@ -3,6 +3,7 @@
 Custom serializer fields for nested translations.
 """
 from __future__ import unicode_literals
+from collections import OrderedDict
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,11 +13,6 @@ from parler.models import TranslatableModel, TranslatedFieldsModel
 from parler.utils.context import switch_language
 
 from parler_rest.utils import create_translated_fields_serializer
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
 
 
 class TranslatedFieldsField(serializers.Field):

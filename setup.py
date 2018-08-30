@@ -47,13 +47,13 @@ setup(
 
     install_requires=[
         'django-parler>=1.2',
-        'djangorestframework>=3.0',
+        'djangorestframework>=3.5',
     ],
     requires=[
-        'Django (>=1.4.2)',
+        'Django (>=1.11)',
     ],
     tests_require=[
-        'django>=1.8',
+        'django>=1.11',
         'pytest==2.7.1',
         'pytest-django==2.8.0',
         'pytest-cov==1.8.1',
@@ -81,11 +81,10 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3.2',
-        # 'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
