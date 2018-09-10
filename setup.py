@@ -54,9 +54,9 @@ setup(
     ],
     tests_require=[
         'django>=1.11',
-        'pytest==2.7.1',
-        'pytest-django==2.8.0',
-        'pytest-cov==1.8.1',
+        'pytest==3.7.3',
+        'pytest-django==3.4.2',
+        'pytest-cov==2.5.1',
     ],
     cmdclass={'test': PyTest},
 

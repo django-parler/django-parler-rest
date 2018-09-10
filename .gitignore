@@ -14,6 +14,8 @@ db.sqlite3
 .DS_Store
 .tox/
 .env
+.eggs/
+.pytest_cache/
 build/
 dist/
 docs/_build/

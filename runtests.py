@@ -8,8 +8,7 @@ import sys
 
 if not settings.configured:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testproj.settings")
-    if django.VERSION >= (1, 7):
-        django.setup()
+    django.setup()
     module_root = os.path.dirname(os.path.realpath(__file__))
     sys.path.insert(0, module_root)
 
