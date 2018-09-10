@@ -29,18 +29,14 @@ SECRET_KEY = '87$noc%^65_5qgg_ngcsdqf&x$2663ch+7ke(5za1vtp!x!lgx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-if django.VERSION >= (1, 8):
-    TEMPLATES = [
-        {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'OPTIONS': {
-                'debug': True,
-            },
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'OPTIONS': {
+            'debug': True,
         },
-    ]
-
-else:
-    TEMPLATE_DEBUG = True
+    },
+]
 
 ALLOWED_HOSTS = []
 
@@ -58,7 +54,7 @@ INSTALLED_APPS = [
     'testproj',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
