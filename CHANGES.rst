@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Changes in version 2.0 (2018-09-10)
+-----------------------------------
+
+* Added Django 2.0 and 2.1 support.
+* Dropped Django 1.7, 1.8, 1.9, 1.10 support.
+
+
 Changes in version 1.4.2 (2016-06-17)
 -------------------------------------
 
