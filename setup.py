@@ -46,7 +46,7 @@ setup(
     license='Apache 2.0',
 
     install_requires=[
-        'django-parler>=1.2',
+        'django-parler>=1.9.2',
         'djangorestframework>=3.5',
     ],
     requires=[
