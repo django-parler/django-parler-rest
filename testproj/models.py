@@ -48,7 +48,7 @@ class PictureTranslation(TranslatedFieldsModel):
     master = models.ForeignKey(
         Picture,
         related_name='translations',
-        null=True,
+        on_delete=models.CASCADE,
     )
 
     caption = models.CharField(
