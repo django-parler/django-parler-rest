@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.fields import SkipField
-from parler.models import TranslatableModel, TranslatedFieldsModel
+from parler.models import TranslatableModelMixin, TranslatedFieldsModel
 from parler.utils.context import switch_language
 
 from parler_rest.utils import create_translated_fields_serializer
@@ -56,10 +56,10 @@ class TranslatedFieldsField(serializers.Field):
         if self.serializer_class is None:
             if self.shared_model is None:
                 # Auto detect parent model
-                from .serializers import TranslatableModelSerializer
-                if not isinstance(parent, TranslatableModelSerializer):
+                from .serializers import TranslatableModelSerializerMixin
+                if not isinstance(parent, TranslatableModelSerializerMixin):
                     raise TypeError("Expected 'TranslatableModelSerializer' as serializer base class")
-                if not issubclass(parent.Meta.model, TranslatableModel):
+                if not issubclass(parent.Meta.model, TranslatableModelMixin):
                     raise TypeError("Expected 'TranslatableModel' for the parent model")
 
                 self.shared_model = parent.Meta.model
