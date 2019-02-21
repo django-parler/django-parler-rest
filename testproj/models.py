@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatableModel, TranslatedFields, TranslatedField
 
 
 @python_2_unicode_compatible
@@ -26,3 +26,19 @@ class Country(TranslatableModel):
 
     def __str__(self):
         return self.name
+
+
+@python_2_unicode_compatible
+class Picture(TranslatableModel):
+
+    """Picture database model."""
+
+    image_nr = models.IntegerField(help_text="Just a dummy number")
+    caption = TranslatedField()
+
+    class Meta:
+        verbose_name = _("picture")
+        verbose_name_plural = _("pictures")
+
+    def __str__(self):
+        return self.caption
