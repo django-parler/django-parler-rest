@@ -67,4 +67,4 @@ class PictureCaptionSerializer(TranslatableModelSerializer):
 
     class Meta:
         model = Picture
-        fields = ('pk', 'country_code', 'translations')
+        fields = ('image_nr', 'caption')

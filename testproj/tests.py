@@ -269,7 +269,7 @@ class PictureCaptionSerializerTestCase(TestCase):
 
     def test_translation_serialization(self):
         expected = {
-            'pk': self.instance.pk,
+            'image_nr': self.instance.image_nr,
             'caption': {
                 'en': "Spain",
                 'es': "España",
@@ -290,3 +290,7 @@ class PictureCaptionSerializerTestCase(TestCase):
         self.assertTrue(serializer.is_valid(), serializer.errors)
         instance = serializer.save()
         assert isinstance(instance, Picture)
+        assert instance.image_nr == 2
+        assert instance.caption == "Spain"
+        self.instance.set_current_language('es')
+        self.instance.caption == "España"
