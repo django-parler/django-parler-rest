@@ -143,7 +143,7 @@ class TranslatedFieldsField(serializers.Field):
         return result
 
 
-class TranslatedField(serializers.ReadOnlyField):
+class TranslatedField(serializers.Field):
     """
     Read-only field to expose a single object property in all it's languages.
     """
@@ -163,6 +163,9 @@ class TranslatedField(serializers.ReadOnlyField):
 
     def to_representation(self, value):
         return value
+
+    def to_internal_value(self, data):
+        return data
 
 
 class TranslatedAbsoluteUrlField(serializers.ReadOnlyField):

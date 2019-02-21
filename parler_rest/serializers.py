@@ -32,10 +32,11 @@ class TranslatableModelSerializerMixin(object):
         Separate data of translated fields from other data.
         """
         translated_data = {}
-        for meta in self.Meta.model._parler_meta:
-            translations = self.validated_data.pop(meta.rel_name, {})
-            if translations:
-                translated_data[meta.rel_name] = translations
+        for key, field in self.get_fields().items():
+            if isinstance(field, (TranslatedField, TranslatedFieldsField)):
+                translations = self.validated_data.pop(key, None)
+                if translations:
+                    translated_data[key] = translations
         return translated_data
 
     def save_translations(self, instance, translated_data):
@@ -43,11 +44,14 @@ class TranslatableModelSerializerMixin(object):
         Save translation data into translation objects.
         """
         for meta in self.Meta.model._parler_meta:
-            translations = translated_data.get(meta.rel_name, {})
-            for lang_code, model_fields in translations.items():
-                translation = instance._get_translated_model(lang_code, auto_create=True, meta=meta)
-                for field, value in model_fields.items():
-                    setattr(translation, field, value)
+            for field_name, translations in translated_data.items():
+                for lang_code, translation in translations.items():
+                    model_field = instance._get_translated_model(lang_code, auto_create=True, meta=meta)
+                    if meta.rel_name == field_name:
+                        for trans_field, value in translation.items():
+                            setattr(model_field, trans_field, value)
+                    elif field_name in meta.get_translated_fields():
+                        setattr(model_field, field_name, translation)
 
         # Go through the same hooks as the regular model,
         # instead of calling translation.save() directly.
