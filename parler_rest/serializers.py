@@ -32,8 +32,9 @@ class TranslatableModelSerializerMixin(object):
         Separate data of translated fields from other data.
         """
         translated_data = {}
-        for key, field in self.get_fields().items():
+        for field_name, field in self.get_fields().items():
             if isinstance(field, (TranslatedField, TranslatedFieldsField)):
+                key = field.source or field_name
                 translations = self.validated_data.pop(key, None)
                 if translations:
                     translated_data[key] = translations
