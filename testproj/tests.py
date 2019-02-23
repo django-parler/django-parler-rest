@@ -290,7 +290,7 @@ class PictureCaptionSerializerTestCase(TestCase):
         self.assertTrue(serializer.is_valid(), serializer.errors)
         instance = serializer.save()
         assert isinstance(instance, Picture)
-        assert instance.image_nr == 2
-        assert instance.caption == "Spain"
+        self.assertEqual(instance.image_nr, 2)
+        self.assertEqual(instance.caption, "Spain")
         self.instance.set_current_language('es')
-        self.instance.caption == "España"
+        self.assertEqual(instance.caption, "España")
