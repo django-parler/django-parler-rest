@@ -13,7 +13,7 @@ from parler.tests.utils import override_parler_settings
 
 from parler_rest.utils import create_translated_fields_serializer
 
-from .models import Country, Picture
+from .models import Country, Picture, PictureTranslation
 from .serializers import (
     CountryTranslatedSerializer,
     CountryAutoSharedModelTranslatedSerializer,
@@ -283,7 +283,7 @@ class PictureCaptionSerializerTestCase(TestCase):
             'image_nr': 2,
             'caption': {
                 'en': "Spain",
-                'es': "España",
+                'de': "Spanien",
             }
         }
         serializer = PictureCaptionSerializer(data=data)
@@ -293,5 +293,7 @@ class PictureCaptionSerializerTestCase(TestCase):
         self.assertEqual(instance.get_current_language(), 'en')
         self.assertEqual(instance.image_nr, 2)
         self.assertEqual(instance.caption, "Spain")
+        instance.set_current_language('de')
+        self.assertEqual(instance.caption, "Spanien")
         instance.set_current_language('es')
-        self.assertEqual(instance.caption, "España")
+        self.assertEqual(instance.caption, "Spain")  # fallback on default
