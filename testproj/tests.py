@@ -13,7 +13,7 @@ from parler.tests.utils import override_parler_settings
 
 from parler_rest.utils import create_translated_fields_serializer
 
-from .models import Country, Picture, PictureTranslation
+from .models import Country, Picture
 from .serializers import (
     CountryTranslatedSerializer,
     CountryAutoSharedModelTranslatedSerializer,
