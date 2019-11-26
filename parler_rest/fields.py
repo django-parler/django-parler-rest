@@ -164,6 +164,7 @@ class TranslatedField(serializers.Field):
     def to_representation(self, value):
         return value
 
+    # pylint: disable=no-self-use
     def to_internal_value(self, data):
         return data
 
