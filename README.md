@@ -2,10 +2,10 @@
 
 **Adding translation support to [django-rest-framework](http://www.django-rest-framework.org/)**.
 
-[![Build Status](https://travis-ci.org/django-parler/django-parler-rest.svg?branch=master)](http://travis-ci.org/django-parler/django-parler-rest)
-[![PyPI](https://img.shields.io/pypi/pyversions/django-parler-rest.svg)](https://https://pypi.python.org/pypi/django-parler-rest)
-[![PyPI version](https://img.shields.io/pypi/v/django-parler-rest.svg)](https://https://pypi.python.org/pypi/django-parler-rest)
-[![License](https://img.shields.io/pypi/l/django-parler-rest.svg)](https://https://pypi.python.org/pypi/django-parler-rest)
+[![Build Status](https://travis-ci.org/django-parler/django-parler-rest.svg?branch=master)](https://travis-ci.org/django-parler/django-parler-rest)
+[![PyPI](https://img.shields.io/pypi/pyversions/django-parler-rest.svg)](https://pypi.python.org/pypi/django-parler-rest)
+[![PyPI version](https://img.shields.io/pypi/v/django-parler-rest.svg)](https://pypi.python.org/pypi/django-parler-rest)
+[![License](https://img.shields.io/pypi/l/django-parler-rest.svg)](https://pypi.python.org/pypi/django-parler-rest)
 [![Coverage](https://img.shields.io/codecov/c/github/django-parler/django-parler-rest/master.svg)](https://codecov.io/github/django-parler/django-parler-rest?branch=master)
 
 This package adds support for TranslatableModels from [django-parler](https://github.com/django-parler/django-parler)
