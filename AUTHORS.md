@@ -1,8 +1,8 @@
-Original authors:
+## Original Authors:
 
 * Diederik van der Boor (@vdboor)
 
-Contributors:
+### Contributors:
 
 * Aarni Koskela
 * Adrián López Calvo (https://github.com/AdrianLC)
