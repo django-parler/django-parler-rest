@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Changes in version next (????-??-??)
+-----------------------------------
+* Read/Write support for ``TranslatedField``.
+* Use composition instead of inheritance by moving funtionality from ``TranslatableModelSerializer``
+  into ``TranslatableModelSerializerMixin``.
+* Fix: Model check agianst ``TranslatableModelMixin``.
+
+
 Changes in version 2.0 (2018-09-10)
 -----------------------------------
 

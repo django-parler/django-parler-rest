@@ -13,12 +13,13 @@ from parler.tests.utils import override_parler_settings
 
 from parler_rest.utils import create_translated_fields_serializer
 
-from .models import Country
+from .models import Country, Picture
 from .serializers import (
     CountryTranslatedSerializer,
     CountryAutoSharedModelTranslatedSerializer,
     CountryExplicitTranslatedSerializer,
     ContinentCountriesTranslatedSerializer,
+    PictureCaptionSerializer,
 )
 
 
@@ -249,3 +250,50 @@ class ParlerRestUtilsTestCase(unittest.TestCase):
         assert serializer.fields["name"]
         assert serializer.fields["url"]
         assert serializer.fields["language_code"]
+
+
+class PictureCaptionSerializerTestCase(TestCase):
+
+    # Disable cache as due to automatic db rollback the instance pk
+    # is the same for all tests and with the cache we'd mistakenly
+    # skips saves after the first test.
+    @override_parler_settings(PARLER_ENABLE_CACHING=False)
+    def setUp(self):
+        self.instance = Picture.objects.create(
+            image_nr=1,
+            caption="Spain",
+        )
+        self.instance.set_current_language('es')
+        self.instance.caption = "España"
+        self.instance.save()
+
+    def test_translation_serialization(self):
+        expected = {
+            'image_nr': self.instance.image_nr,
+            'caption': {
+                'en': "Spain",
+                'es': "España",
+            }
+        }
+        serializer = PictureCaptionSerializer(self.instance)
+        six.assertCountEqual(self, serializer.data, expected)
+
+    def test_translation_deserialization(self):
+        data = {
+            'image_nr': 2,
+            'caption': {
+                'en': "Spain",
+                'de': "Spanien",
+            }
+        }
+        serializer = PictureCaptionSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        instance = serializer.save()
+        self.assertIsInstance(instance, Picture)
+        self.assertEqual(instance.get_current_language(), 'en')
+        self.assertEqual(instance.image_nr, 2)
+        self.assertEqual(instance.caption, "Spain")
+        instance.set_current_language('de')
+        self.assertEqual(instance.caption, "Spanien")
+        instance.set_current_language('es')
+        self.assertEqual(instance.caption, "Spain")  # fallback on default

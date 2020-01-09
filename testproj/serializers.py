@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 
 from rest_framework import serializers
 
-from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField
+from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField, TranslatedField
 
-from .models import Country
+from .models import Country, Picture
 
 
 class CountryTranslatedSerializer(TranslatableModelSerializer):
@@ -56,3 +56,15 @@ class ContinentCountriesTranslatedSerializer(serializers.Serializer):
 
     continent = serializers.CharField()
     countries = CountryTranslatedSerializer(many=True)
+
+
+class PictureCaptionSerializer(TranslatableModelSerializer):
+    """
+    A serializer with one translated field.
+    """
+
+    caption = TranslatedField()
+
+    class Meta:
+        model = Picture
+        fields = ('image_nr', 'caption')
