@@ -5,7 +5,7 @@ Custom serializer fields for nested translations.
 from __future__ import unicode_literals
 from collections import OrderedDict
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.fields import SkipField
