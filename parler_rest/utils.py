@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Various utilities to ease integration with Rest Framework.
 """

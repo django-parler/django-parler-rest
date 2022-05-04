@@ -8,11 +8,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-from __future__ import unicode_literals
-
 import os.path
 
-import django
 from django.utils.translation import ugettext_lazy as _
 
 
