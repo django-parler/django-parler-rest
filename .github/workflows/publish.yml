@@ -1,15 +1,27 @@
+<<<<<<< HEAD
 name: Publish django-parler-rest on PyPI
 
 on:
   push:
     tags:
       - '*'
+=======
+name: Publish Python 🐍 distributions 📦 to pypi
+
+on:
+  release:
+    types:
+      - published
+>>>>>>> origin/master
 
 jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to pypi
     runs-on: ubuntu-latest
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.9
