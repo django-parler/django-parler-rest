@@ -1,14 +1,15 @@
 name: Publish django-parler-rest on PyPI
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - '*'
 
 jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to pypi
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.9
