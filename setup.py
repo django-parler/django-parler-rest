@@ -48,12 +48,9 @@ setup(
     install_requires=[
         'django-parler>=1.9.2',
         'djangorestframework>=3.5',
-    ],
-    requires=[
-        'Django>=2.2',
+        'django>=2.2',
     ],
     tests_require=[
-        'django>=2.2',
         'pytest',
         'pytest-django',
         'pytest-cov',
