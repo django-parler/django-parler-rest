@@ -1,5 +1,13 @@
 # Changelog
 
+## Changes in version 2.2 (2022-05-04)
+
+* Drop support for Python-2.
+* Add support for Python-3.8, 3.9 and 3.10.
+* Drop support for Django 2.0 and 2.1.
+* Add support for Django 3.2 and 4.0.
+
+
 ## Changes in version 2.1 (2020-01-09)
 
 * Read/Write support for `TranslatedField`.

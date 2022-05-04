@@ -1,0 +1,30 @@
+name: Publish django-parler-rest on PyPI
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python 🐍 distributions 📦 to pypi
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install build --user
+    - name: Build 🐍 Python 📦 Package
+      run: python -m build --sdist --wheel --outdir dist/ .
+    - name: Publish 🐍 Python 📦 Package to PyPI
+      if: startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
