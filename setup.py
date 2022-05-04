@@ -50,13 +50,13 @@ setup(
         'djangorestframework>=3.5',
     ],
     requires=[
-        'Django (>=1.11)',
+        'Django>=2.2',
     ],
     tests_require=[
-        'django>=1.11',
-        'pytest==3.7.3',
-        'pytest-django==3.4.2',
-        'pytest-cov==2.5.1',
+        'django>=2.2',
+        'pytest',
+        'pytest-django',
+        'pytest-cov',
     ],
     cmdclass={'test': PyTest},
 
@@ -82,13 +82,11 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.2',
+        'Framework :: Django :: 4.0',
     ]
 )
