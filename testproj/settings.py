@@ -8,11 +8,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-from __future__ import unicode_literals
-
 import os.path
 
-import django
 from django.utils.translation import gettext_lazy as _
 
 
@@ -77,6 +74,8 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Custom serializers suitable to translated models.
 """
-from __future__ import absolute_import, unicode_literals
 from rest_framework import serializers
 
 # Similar to DRF itself, expose all fields in the same manner.

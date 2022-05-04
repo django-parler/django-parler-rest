@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-
 """Serializer integration tests."""
-
-from __future__ import unicode_literals
 
 import unittest
 
 from django.test import TestCase
-from django.utils import six
 
 from parler.tests.utils import override_parler_settings
 
@@ -55,7 +50,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
             }
         }
         serializer = CountryTranslatedSerializer(self.instance)
-        six.assertCountEqual(self, serializer.data, expected)
+        self.assertCountEqual(serializer.data, expected)
 
     def test_translations_serialization_only_some_languages(self):
         self.instance.set_current_language('fr')
@@ -79,7 +74,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         }
         context = {'languages': ['es', 'fr']}
         serializer = CountryTranslatedSerializer(self.instance, context=context)
-        six.assertCountEqual(self, serializer.data, expected)
+        self.assertCountEqual(serializer.data, expected)
 
     def test_translations_validation(self):
         data = {
@@ -97,7 +92,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         }
         serializer = CountryTranslatedSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)
-        six.assertCountEqual(self, serializer.validated_data['translations'], data['translations'])
+        self.assertCountEqual(serializer.validated_data['translations'], data['translations'])
 
     def test_translated_fields_validation(self):
         data = {
@@ -115,7 +110,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         serializer = CountryTranslatedSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn('translations', serializer.errors)
-        six.assertCountEqual(self, serializer.errors['translations'], ('en', 'es'))
+        self.assertCountEqual(serializer.errors['translations'], ('en', 'es'))
         self.assertIn('name', serializer.errors['translations']['en'])
         self.assertIn('url', serializer.errors['translations']['es'])
 
@@ -240,7 +235,7 @@ class CountryTranslatedSerializerTestCase(TestCase):
         self.assertTrue(serializer.is_valid(), serializer.errors)
         nested_data = serializer.validated_data['countries'][0]
         expected = data['countries'][0]
-        six.assertCountEqual(self, nested_data, expected)
+        self.assertCountEqual(nested_data, expected)
 
 
 class ParlerRestUtilsTestCase(unittest.TestCase):
@@ -276,7 +271,7 @@ class PictureCaptionSerializerTestCase(TestCase):
             }
         }
         serializer = PictureCaptionSerializer(self.instance)
-        six.assertCountEqual(self, serializer.data, expected)
+        self.assertCountEqual(serializer.data, expected)
 
     def test_translation_deserialization(self):
         data = {

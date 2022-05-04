@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Custom serializer fields for nested translations.
 """
-from __future__ import unicode_literals
 from collections import OrderedDict
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _

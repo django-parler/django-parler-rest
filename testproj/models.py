@@ -1,14 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext_lazy as _
 
 from parler.models import TranslatableModel, TranslatedFields, TranslatedField, TranslatedFieldsModel
 
 
-@python_2_unicode_compatible
 class Country(TranslatableModel):
 
     """Country database model."""
@@ -28,7 +23,6 @@ class Country(TranslatableModel):
         return self.name
 
 
-@python_2_unicode_compatible
 class Picture(TranslatableModel):
 
     """Picture database model."""
