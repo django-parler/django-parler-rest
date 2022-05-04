@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Python dependencies
@@ -29,4 +29,5 @@ jobs:
       run: |
         pwd
         ls -la
+        cd ..
         coverage run --source=parler_rest runtests.py
