@@ -14,7 +14,8 @@ from .serializers import (
     CountryAutoSharedModelTranslatedSerializer,
     CountryExplicitTranslatedSerializer,
     ContinentCountriesTranslatedSerializer,
-    PictureCaptionSerializer,
+    PictureCaptionSerializer, FlatContinentCountriesTranslatedSerializer, FlatCountryTranslatedSerializer,
+    FlatCountryNoLanguageCodeTranslatedSerializer, FlatCountryExplicitLangTranslatedSerializer,
 )
 
 
@@ -292,3 +293,168 @@ class PictureCaptionSerializerTestCase(TestCase):
         self.assertEqual(instance.caption, "Spanien")
         instance.set_current_language('es')
         self.assertEqual(instance.caption, "Spain")  # fallback on default
+
+
+class FlatCountryTranslatedSerializerTestCase(TestCase):
+    # Disable cache as due to automatic db rollback the instance pk
+    # is the same for all tests and with the cache we'd mistakenly
+    # skips saves after the first test.
+    @override_parler_settings(PARLER_ENABLE_CACHING=False)
+    def setUp(self):
+        self.instance = Country.objects.create(
+            country_code='ES', name="Spain",
+            url="http://en.wikipedia.org/wiki/Spain"
+        )
+        self.instance.set_current_language('es')
+        self.instance.name = "España"
+        self.instance.url = "http://es.wikipedia.org/wiki/España"
+        self.instance.save()
+
+    def test_en_translations_serialization(self):
+        self.instance.set_current_language('en')
+        expected_en = {
+            'pk': self.instance.pk,
+            'country_code': 'ES',
+            'language_code': 'en',
+            'name': "Spain",
+            'url': "http://en.wikipedia.org/wiki/Spain"
+        }
+        serializer = FlatCountryTranslatedSerializer(self.instance)
+        self.assertDictEqual(serializer.data, expected_en)
+
+    def test_es_translations_serialization(self):
+        self.instance.set_current_language('es')
+        expected_es = {
+            'pk': self.instance.pk,
+            'country_code': 'ES',
+            'language_code': 'es',
+            'name': "España",
+            'url': "http://es.wikipedia.org/wiki/España"
+        }
+        serializer = FlatCountryTranslatedSerializer(self.instance)
+        self.assertDictEqual(serializer.data, expected_es)
+
+    def test_translations_serialization_no_language_code(self):
+        self.instance.set_current_language('es')
+        serializer = FlatCountryNoLanguageCodeTranslatedSerializer(self.instance)
+        expected = {
+            'pk': self.instance.pk,
+            'country_code': 'ES',
+            'name': "España",
+            'url': "http://es.wikipedia.org/wiki/España"
+        }
+        self.assertDictEqual(serializer.data, expected)
+
+    def test_language_code_validation(self):
+        data = {
+            'country_code': 'es',
+            'language_code': 'es',
+            'name': 'España',
+            'url': "http://es.wikipedia.org/wiki/España"
+        }
+        serializer = FlatCountryTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
+    def test_language_code_invalid(self):
+        data = {
+            'country_code': 'es',
+            'language_code': 'fr',
+            'name': 'Espagne',
+            'url': "http://fr.wikipedia.org/wiki/Espagne"
+        }
+        serializer = FlatCountryTranslatedSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('language_code', serializer.errors)
+        self.assertEqual(serializer.errors['language_code'][0], '"fr" is not a valid choice.')
+
+    def test_translated_fields_validation(self):
+        data = {
+            'country_code': 'FR',
+            'language_code': 'en',
+            'url': "es.wikipedia.org/wiki/Francia"
+        }
+        serializer = FlatCountryTranslatedSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('name', serializer.errors)
+        self.assertEqual(serializer.errors['name'][0], 'This field is required.')
+        self.assertIn('url', serializer.errors)
+        self.assertEqual(serializer.errors['url'][0], 'Enter a valid URL.')
+
+    def test_translation_saving_on_create(self):
+        data = {
+            'country_code': 'FR',
+            'language_code': 'es',
+            'name': "Francia",
+            'url': "http://es.wikipedia.org/wiki/Francia"
+        }
+        serializer = FlatCountryTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        instance = serializer.save()
+        instance = Country.objects.get(pk=instance.pk)
+        instance.set_current_language('es')
+        self.assertEqual(instance.name, "Francia")
+        self.assertEqual(instance.url, "http://es.wikipedia.org/wiki/Francia")
+
+    def test_translation_saving_on_update(self):
+        data = {
+            'country_code': 'E',
+            'language_code': 'es',
+            'name': "Hispania",
+            'url': "http://es.wikipedia.org/wiki/Hispania"
+        }
+        serializer = FlatCountryTranslatedSerializer(self.instance, data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        instance = serializer.save()
+        instance = Country.objects.get(pk=instance.pk)
+        self.assertEqual(instance.country_code, 'E')  # also check if shared model is updated
+
+        instance.set_current_language('es')
+        self.assertEqual(instance.name, "Hispania")
+        self.assertEqual(instance.url, "http://es.wikipedia.org/wiki/Hispania")
+
+    def test_translations_saving_on_update_with_new_translation(self):
+        data = {
+            'country_code': 'ES',
+            'language_code': 'fr',
+            'name': "Espagne",
+            'url': "http://fr.wikipedia.org/wiki/Espagne"
+        }
+        # Language choices are automatically verified against settings,
+        # thus using a serializer with explicitly set language choices
+        serializer = FlatCountryExplicitLangTranslatedSerializer(self.instance, data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        instance = serializer.save()
+        instance = Country.objects.get(pk=instance.pk)
+        instance.set_current_language('fr')
+        self.assertEqual(instance.name, "Espagne")
+        self.assertEqual(instance.url, "http://fr.wikipedia.org/wiki/Espagne")
+
+    def test_translation_saving_on_create_no_language_code(self):
+        data = {
+            'country_code': 'FR',
+            'name': "French",
+            'url': "http://en.wikipedia.org/wiki/French"
+        }
+        serializer = FlatCountryNoLanguageCodeTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        instance = serializer.save()
+        instance = Country.objects.get(pk=instance.pk)
+        instance.set_current_language('en')  # The fallback language, set via get_language
+        self.assertEqual(instance.name, "French")
+        self.assertEqual(instance.url, "http://en.wikipedia.org/wiki/French")
+
+    def test_nested__translatedserializer(self):
+        data = {
+            "continent": "Europe",
+            "countries": [{
+                'country_code': 'FR',
+                'language_code': 'en',
+                'name': "France",
+                'url': "http://en.wikipedia.org/wiki/France"
+            }]
+        }
+        serializer = FlatContinentCountriesTranslatedSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        nested_data = serializer.validated_data['countries'][0]
+        expected = data['countries'][0]
+        self.assertDictEqual(nested_data, expected)

@@ -1,7 +1,9 @@
 """
 Custom serializers suitable to translated models.
 """
+from django.core.exceptions import FieldDoesNotExist
 from rest_framework import serializers
+from parler.utils.i18n import get_language
 
 # Similar to DRF itself, expose all fields in the same manner.
 from parler_rest.fields import TranslatedFieldsField, TranslatedField, TranslatedAbsoluteUrlField  # noqa
@@ -62,3 +64,46 @@ class TranslatableModelSerializer(TranslatableModelSerializerMixin, serializers.
     Serializer that saves :class:`TranslatedFieldsField` automatically.
     """
     pass
+
+
+class TranslatableFlatModelSerializer(TranslatableModelSerializerMixin, serializers.ModelSerializer):
+    """
+    Serializer that returns a flat model and saves the translations to the activated language.
+    """
+
+    def _pop_translated_data(self):
+        translated_data = {}
+        language_code = self.validated_data.pop('language_code', None) or get_language()
+        translated_fields = self._pop_translatable_fields()
+        for meta in self.Meta.model._parler_meta:
+            translations = {}
+            if translated_fields:
+                translations[language_code] = translated_fields
+                translated_data[meta.rel_name] = translations
+        return translated_data
+
+    def _pop_translatable_fields(self):
+        """
+        Separate translated fields and value from the shared object data.
+        """
+        translated_fields = {}
+        fields = (field for field in self.Meta.model._parler_meta.get_all_fields()
+                  if field in self.validated_data)
+        for field in fields:
+            translated_fields[field] = self.validated_data.pop(field)
+        return translated_fields
+
+    def build_field(self, field_name, info, model_class, nested_depth):
+        """
+        Build fields for translatable fields when not explicitly defined
+        """
+        field = None
+        if field_name not in ('id', 'master'):
+            try:
+                field = model_class._parler_meta.root_model._meta.get_field(field_name)
+            except FieldDoesNotExist:
+                pass
+        if field is not None:
+            return self.build_standard_field(field_name, field)
+        return super(TranslatableFlatModelSerializer, self).build_field(
+         field_name, info, model_class, nested_depth)
