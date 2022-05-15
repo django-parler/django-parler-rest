@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField, TranslatedField
+from parler_rest.serializers import TranslatableModelSerializer, TranslatedFieldsField, TranslatedField, \
+    TranslatableFlatModelSerializer
 
 from .models import Country, Picture
 
@@ -65,3 +66,47 @@ class PictureCaptionSerializer(TranslatableModelSerializer):
     class Meta:
         model = Picture
         fields = ('image_nr', 'caption')
+
+
+class FlatCountryTranslatedSerializer(TranslatableFlatModelSerializer):
+    """
+    A serializer with a flat structure returning a single language for the translations
+    """
+
+    class Meta:
+        model = Country
+        fields = ('pk', 'country_code', 'language_code', 'name', 'url')
+
+
+class FlatCountryExplicitLangTranslatedSerializer(TranslatableFlatModelSerializer):
+    """
+    A serializer where the possible language choice for the language_code field is explicit assigned
+    """
+    LANGUAGE_CHOICES = (
+        ('en', 'english'),
+        ('es', 'spanish'),
+        ('fr', 'french'),
+    )
+    language_code = serializers.ChoiceField(choices=LANGUAGE_CHOICES)
+
+    class Meta:
+        model = Country
+        fields = ('pk', 'country_code', 'language_code', 'name', 'url')
+
+
+class FlatCountryNoLanguageCodeTranslatedSerializer(TranslatableFlatModelSerializer):
+    """
+    A serializer without a language_code field declared
+    """
+
+    class Meta:
+        model = Country
+        fields = ('pk', 'country_code', 'name', 'url')
+
+
+class FlatContinentCountriesTranslatedSerializer(serializers.Serializer):
+    """
+    A flat serializer with a nested translation serializer
+    """
+    continent = serializers.CharField()
+    countries = FlatCountryTranslatedSerializer(many=True)
