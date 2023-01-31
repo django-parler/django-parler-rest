@@ -72,6 +72,17 @@ class CountrySerializer(TranslatableModelSerializer):
 **Note:** The `TranslatedFieldsField` can only be used in a serializer that inherits from
 `TranslatableModelSerializer`.
 
+To exclude translated fields you can use the ```exclude_fields``` parameter of TranslatedFieldsField.
+
+```
+class CountrySerializer(TranslatableModelSerializer):
+    translations = TranslatedFieldsField(shared_model=Country, exclude_fields=['url'])
+
+    class Meta:
+        model = Country
+        fields = ('id', 'country_code', 'translations')
+```
+
 
 This will expose the fields as a separate dictionary in the JSON output:
 

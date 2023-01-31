@@ -28,6 +28,7 @@ class TranslatedFieldsField(serializers.Field):
         """
         self.serializer_class = kwargs.pop('serializer_class', None)
         self.shared_model = kwargs.pop('shared_model', None)
+        self.exclude_fields = kwargs.pop('exclude_fields', [])
 
         self.allow_empty = kwargs.pop('allow_empty', False)
         super(TranslatedFieldsField, self).__init__(*args, **kwargs)
@@ -108,7 +109,13 @@ class TranslatedFieldsField(serializers.Field):
 
         # Split into a dictionary per language
         result = OrderedDict()
+
         for translation in translations:
+            if self.exclude_fields:
+                for ex in self.exclude_fields:
+                    if  serializer.fields.get(ex):
+                        del serializer.fields[ex]
+
             result[translation.language_code] = serializer.to_representation(translation)
 
         return result
